@@ -1,0 +1,15 @@
+diff --git a/src/raw_rwlock.rs b/src/raw_rwlock.rs
+index 21d338b..6d1fef9 100644
+--- a/src/raw_rwlock.rs
++++ b/src/raw_rwlock.rs
+@@ -988,8 +988,8 @@ impl RawRwLock {
+                 if let Err(x) = self.state.compare_exchange_weak(
+                     state,
+                     state | WRITER_PARKED_BIT,
+-                    Ordering::Relaxed,
+-                    Ordering::Relaxed,
++                    Ordering::Acquire,
++                    Ordering::Acquire,
+                 ) {
+                     state = x;
+                     continue;

@@ -1,0 +1,44 @@
+info,url
+Regenerate no_atomic,https://github.com//crossbeam-rs/crossbeam/commit/71847adbd834f836e17ac1ed7afa79c159cfd2ee
+Handle min-atomic-width in no_atomic.sh,https://github.com//crossbeam-rs/crossbeam/commit/3396d5cfc2d81905a66fc1182ca64da65f6a141b
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/ec7d71e7046d95ee063437409ebae09f9346f464
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/d0c1fee1b57d49ba027f8ca7b1513368abde2b1e
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/525fa447b03d4c8dd33875be765e272f1b1a79e9
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/3161410f23ec27a0b094145a7f045866e8008548
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/c4534f062017fa630524d16b9edfc2d37930a00e
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/136a465f471f808faca08da83929073aee7a9717
+Use get_mut instead of atomic load in Drop impls,https://github.com//crossbeam-rs/crossbeam/commit/5866c439e6b5b10da070773eadd7c087e331668e
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/0362480f797a8193af8001f88b9f2c54f6cf1082
+Fix typo in crossbeam-epoch/src/atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/3419a6f320c909f11ac43a729cbe6333fd93f88b
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/5cb7cac9f230ca2449c9f6553d43af72b3cf87ec
+Update no_atomic.rs,https://github.com//crossbeam-rs/crossbeam/commit/6cf759b7d2a05454d3281cf9d8b830897e79df04
+Automatically creates PR when no_atomic.rs needs to be updated,https://github.com//crossbeam-rs/crossbeam/commit/4d029943c3b6e2171ecc9c26e75fe91382716567
+Clean up ci/no_atomic.sh,https://github.com//crossbeam-rs/crossbeam/commit/54def997401029c1ffaed9f7fa0663d049e128f4
+Remove unneeded branch from atomic! and atomic_is_lock_free,https://github.com//crossbeam-rs/crossbeam/commit/361565aa781d3137e2e89fdbd18058d8caa8b134
+Update list of targets that do not support atomic CAS,https://github.com//crossbeam-rs/crossbeam/commit/6dcc95155fb10ea9dccbfe2da39fe780fdbf2df9
+Allow AtomicConsume to be used on targets that do not support atomic,https://github.com//crossbeam-rs/crossbeam/commit/7e6c09783123bf9019d9cebc2a44d24c7239b5e7
+Remove uses of unstable feature(cfg_target_has_atomic),https://github.com//crossbeam-rs/crossbeam/commit/558c3ced61ef1f3bece2ab1de0a65547b906d679
+Add list of main items to docs of utils and atomic modules,https://github.com//crossbeam-rs/crossbeam/commit/7b5a8844e0bbd4f721bf2f23fb96ce19b10f54ed
+Enable AtomicConsume impls for integer atomics on stable,https://github.com//crossbeam-rs/crossbeam/commit/2270725440fa5073c61fa2a5f1b7c0ead4b92434
+Move cfg(target_has_atomic) to crossbeam-queue,https://github.com//crossbeam-rs/crossbeam/commit/89640f0dbc7d356a0ef85183a5067a88fc15cf31
+relax memory ordering of treiber stack,https://github.com//crossbeam-rs/crossbeam/commit/f4c13e2301e23e53ddee6be57192df668c7e747c
+"Use integer atomics for for u8, u16, u32, u64 to implement lockfree A…",https://github.com//crossbeam-rs/crossbeam/commit/11fbf05968ba702b61b6c61e32fdd4250b2c0aba
+Support non-atomic targets,https://github.com//crossbeam-rs/crossbeam/commit/96ddd4d34b062785da8da25c66e48076f1f6e73d
+Use acquire-release orderings in AtomicCell,https://github.com//crossbeam-rs/crossbeam/commit/9257433b510d200dc1a55219c7a7278280339170
+Use target_has_atomic in impl_arithmethic,https://github.com//crossbeam-rs/crossbeam/commit/030f8758269ff46e39194d7a74d523d4fc5cb80f
+Move AtomicConsume into atomic module (,https://github.com//crossbeam-rs/crossbeam/commit/7e9ef93a1dc1c61ddc597b84051cf21838ab0c9a
+add benchmark for atomicring::AtomicRingQueue and different type sizes,https://github.com//crossbeam-rs/crossbeam/commit/fb28a20d073ebce426de7b731cabb62e7577e141
+add benchmarks for mpmc::Queue and atomicring::AtomicRingBuffer,https://github.com//crossbeam-rs/crossbeam/commit/40ee9e012bf0e3f17f81549e47e0c2b293af055c
+add benchmarks for mpmc::Queue and atomicring::AtomicRingBuffer,https://github.com//crossbeam-rs/crossbeam/commit/ca66549ea1a5be4ce2bd3258109f23fe10fbf3ca
+Reading from atomic types with Consume ordering (,https://github.com//crossbeam-rs/crossbeam/commit/daed549db66fd1530aac579532f9f33075beaf95
+Fix an ordering bug in Global::push_bag() (,https://github.com//crossbeam-rs/crossbeam/commit/4e2dcd013c453055c79347115d2fd81347db55ae
+Additional impls and methods in the atomic API (,https://github.com//crossbeam-rs/crossbeam/commit/6a274cae5dd0ddb62fac3a34328b1928ddfa1251
+Allow and truncate big tags in atomic's fetch_* (,https://github.com//crossbeam-rs/crossbeam/commit/c1e9c23d3009998f66665403a2d8b191b6271762
+Remove a mem::forget() in Chase-Lev by reordering instructions,https://github.com//crossbeam-rs/crossbeam/commit/25f4a12c012a0979d97967c29cb0f65de5aef065
+Revert the change on ordering in Chase-Lev,https://github.com//crossbeam-rs/crossbeam/commit/5cdc8d68705e71148e684171cbab00503d4ee079
+Fix ordering bug in MS queue (,https://github.com//crossbeam-rs/crossbeam/commit/07245b3f3d2d938017581a71c02754be9e794ae8
+Fixes ordering bug in ms queue (,https://github.com//crossbeam-rs/crossbeam/commit/bf1fb5627d67582a53ef712e8cb07fb9ebf878fa
+use more relaxed orderings in chase_lev,https://github.com//crossbeam-rs/crossbeam/commit/977bbb7f0b353e010139636028c1fe6dcb132e91
+Fix memory ordering on MsQueue,https://github.com//crossbeam-rs/crossbeam/commit/bbb8966097ae194de5b620439a5e02f4dd676962
+Relax mem ordering more when exiting a crit. sect.,https://github.com//crossbeam-rs/crossbeam/commit/11df3acbb947e62f3b77639d7ce49f1ff50f85b3
+Tweaks to memory orderings for seg_queue,https://github.com//crossbeam-rs/crossbeam/commit/ea7433b9a840ef148c96595d5c899b09e468cb9e

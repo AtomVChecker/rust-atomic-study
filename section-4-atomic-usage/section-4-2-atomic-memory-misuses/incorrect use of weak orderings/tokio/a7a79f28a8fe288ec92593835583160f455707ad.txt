@@ -1,0 +1,13 @@
+diff --git a/tokio/src/task/state.rs b/tokio/src/task/state.rs
+index dadfe540..b764167e 100644
+--- a/tokio/src/task/state.rs
++++ b/tokio/src/task/state.rs
+@@ -266,7 +266,7 @@ impl State {
+             .compare_exchange_weak(
+                 INITIAL_STATE | JOIN_INTEREST,
+                 INITIAL_STATE,
+-                Relaxed,
++                Release,
+                 Relaxed,
+             )
+             .is_ok()

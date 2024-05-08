@@ -1,0 +1,81 @@
+[package]
+name = "crossbeam"
+# When publishing a new version:
+# - Update CHANGELOG.md
+# - Update README.md
+# - Create "crossbeam-X.Y.Z" git tag
+version = "0.8.2"
+edition = "2018"
+rust-version = "1.38"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/crossbeam-rs/crossbeam"
+homepage = "https://github.com/crossbeam-rs/crossbeam"
+description = "Tools for concurrent programming"
+keywords = ["atomic", "garbage", "non-blocking", "lock-free", "rcu"]
+categories = ["concurrency", "memory-management", "data-structures", "no-std"]
+exclude = ["/.*", "/ci", "/tools"]
+
+[features]
+default = ["std"]
+
+# Enable to use APIs that require `std`.
+# This is enabled by default.
+std = [
+  "alloc",
+  "crossbeam-channel/std",
+  "crossbeam-deque/std",
+  "crossbeam-epoch/std",
+  "crossbeam-queue/std",
+  "crossbeam-utils/std",
+]
+
+# Enable to use APIs that require `alloc`.
+# This is enabled by default and also enabled if the `std` feature is enabled.
+alloc = ["crossbeam-epoch/alloc", "crossbeam-queue/alloc"]
+
+[dependencies]
+cfg-if = "1"
+
+[dependencies.crossbeam-channel]
+version = "0.5"
+path = "./crossbeam-channel"
+default-features = false
+optional = true
+
+[dependencies.crossbeam-deque]
+version = "0.8"
+path = "./crossbeam-deque"
+default-features = false
+optional = true
+
+[dependencies.crossbeam-epoch]
+version = "0.9.5"
+path = "./crossbeam-epoch"
+default-features = false
+optional = true
+
+[dependencies.crossbeam-queue]
+version = "0.3.2"
+path = "./crossbeam-queue"
+default-features = false
+optional = true
+
+[dependencies.crossbeam-utils]
+version = "0.8.5"
+path = "./crossbeam-utils"
+default-features = false
+
+[dev-dependencies]
+rand = "0.8"
+
+[workspace]
+members = [
+  ".",
+  "crossbeam-channel",
+  "crossbeam-channel/benchmarks",
+  "crossbeam-deque",
+  "crossbeam-epoch",
+  "crossbeam-queue",
+  "crossbeam-skiplist",
+  "crossbeam-utils",
+]

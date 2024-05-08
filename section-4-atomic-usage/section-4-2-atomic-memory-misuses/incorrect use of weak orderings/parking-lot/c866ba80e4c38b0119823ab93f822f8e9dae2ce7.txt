@@ -1,0 +1,22 @@
+diff --git a/src/raw_rwlock.rs b/src/raw_rwlock.rs
+index 75a9812..19b61c8 100644
+--- a/src/raw_rwlock.rs
++++ b/src/raw_rwlock.rs
+@@ -362,7 +362,7 @@ unsafe impl lock_api::RawRwLockUpgrade for RawRwLock {
+     unsafe fn upgrade(&self) {
+         let state = self.state.fetch_sub(
+             (ONE_READER | UPGRADABLE_BIT) - WRITER_BIT,
+-            Ordering::Relaxed,
++            Ordering::Acquire,
+         );
+         if state & READERS_MASK != ONE_READER {
+             let result = self.upgrade_slow(None);
+@@ -377,7 +377,7 @@ unsafe impl lock_api::RawRwLockUpgrade for RawRwLock {
+             .compare_exchange_weak(
+                 ONE_READER | UPGRADABLE_BIT,
+                 WRITER_BIT,
+-                Ordering::Relaxed,
++                Ordering::Acquire,
+                 Ordering::Relaxed,
+             )
+             .is_ok()

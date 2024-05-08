@@ -1,0 +1,13 @@
+info,url
+Enable portable-atomic's require-cas feature (,https://github.com//mvdnes/spin-rs/commit/5be251f5b52b653c2c40fcdc1089d38114125efa
+Made error messages when using portable_atomic without appropriate cf…,https://github.com//mvdnes/spin-rs/commit/3d061b84e0f63e060cfd719bceb3c70d3d52cac3
+Update portable-atomic to 1 (,https://github.com//mvdnes/spin-rs/commit/bb41f3ef19d4da5e361a034acf8571ed7e06cfbc
+Fix docs about portable_atomic feature,https://github.com//mvdnes/spin-rs/commit/f1acd4f8dc370bcc156dff2b9b323f871d446f44
+Disable default features of portable-atomic crate,https://github.com//mvdnes/spin-rs/commit/7c0169bea69d94b1c796388713720e7ec41ea405
+Added portable_atomic feature,https://github.com//mvdnes/spin-rs/commit/4683847c7621b1effeebcf4fe607ceee998aec2e
+Elaborate on call_once() failure ordering.,https://github.com//mvdnes/spin-rs/commit/46245c66973e938cdf08b64e5ddbb79ee54b5149
+Change panic-handler ordering back to SeqCst.,https://github.com//mvdnes/spin-rs/commit/5785132c9d09ce23eba2520edd8a825349f88ac6
+Use strong ordering in RwLock try_write,https://github.com//mvdnes/spin-rs/commit/4bda3d9e3837e90008de3a26fb0d8182fc5227ec
+use core::sync::atomic::spin_loop_hint,https://github.com//mvdnes/spin-rs/commit/481c91392c51c5f7d0697030f4b7a4567e97c791
+Rename INIT_STATIC_SPINLOCK just as atomic bool,https://github.com//mvdnes/spin-rs/commit/33333c16b23b7b54c27e03c05aaaf2b876273a9c
+atomics -> atomic & Unsafe -> UnsafeCell,https://github.com//mvdnes/spin-rs/commit/5e07786ce176e5e9827fb7dcbd7cd97eb3b0ec5f

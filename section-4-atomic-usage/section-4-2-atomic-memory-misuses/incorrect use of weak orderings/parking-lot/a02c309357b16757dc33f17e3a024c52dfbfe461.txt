@@ -1,0 +1,15 @@
+diff --git a/core/src/parking_lot.rs b/core/src/parking_lot.rs
+index 25e2a30..fb87aef 100644
+--- a/core/src/parking_lot.rs
++++ b/core/src/parking_lot.rs
+@@ -216,8 +216,8 @@ fn create_hashtable() -> &'static HashTable {
+     let table = match HASHTABLE.compare_exchange(
+         ptr::null_mut(),
+         new_table,
+-        Ordering::Release,
+-        Ordering::Relaxed,
++        Ordering::AcqRel,
++        Ordering::Acquire,
+     ) {
+         Ok(_) => new_table,
+         Err(old_table) => {

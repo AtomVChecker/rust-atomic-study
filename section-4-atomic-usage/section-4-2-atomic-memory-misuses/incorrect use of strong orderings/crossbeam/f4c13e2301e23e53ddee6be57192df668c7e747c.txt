@@ -1,0 +1,13 @@
+diff --git a/crossbeam-epoch/examples/treiber_stack.rs b/crossbeam-epoch/examples/treiber_stack.rs
+index cc15c0d..3bac1d5 100644
+--- a/crossbeam-epoch/examples/treiber_stack.rs
++++ b/crossbeam-epoch/examples/treiber_stack.rs
+@@ -64,7 +64,7 @@ impl<T> TreiberStack<T> {
+ 
+                     if self
+                         .head
+-                        .compare_and_set(head, next, Release, &guard)
++                        .compare_and_set(head, next, Relaxed, &guard)
+                         .is_ok()
+                     {
+                         unsafe {
