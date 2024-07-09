@@ -1,6 +1,6 @@
 # Atomic correlation analysis
 
-Atomic correlations reflect AtomVChecker's ability to detect potential memory ordering misuses through static analysis(* means experimental results on atomic correlations from other applications in Table 3). All the experiments are done on an 20.04-Ubuntu system with a 3.20 GHz Intel processor.
+Atomic correlations reflect AtomVChecker's ability to detect potential memory ordering misuses through static analysis(* means experimental results on atomic correlations from other softwares in Table 3). All the experiments are done on an 20.04-Ubuntu system with a 3.20 GHz Intel processor.
 
 | Library      | # Atomic Correlations | # Involved Structures | % False Positive  |
 |--------------|-----------------------|-----------------------|-------------------|
