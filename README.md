@@ -5,4 +5,4 @@ This section includes the use of atomic types(see [atomic-usage-count](section-4
 
 
 ## section-5-detection
-This section contains source code for detecting memory ordering misues.
+This section includes source code for detecting memory ordering misuses(see [AtomVChecker](https://github.com/AtomVChecker/rust-atomic-study/tree/main/section-5-detection/AtomVChecker)), and adds experimental results for atomic correlations(see [atomic correlations](https://github.com/AtomVChecker/rust-atomic-study/blob/main/section-5-detection/README.md)). 
