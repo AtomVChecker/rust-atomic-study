@@ -1,8 +1,8 @@
-# A simple example to test the performance of concurrency primitives: atomic, mutex, and channel.
+# An example to test the performance of concurrency primitives: atomic, mutex, and channel.
 
 ## Usages
 
-```cd performance-test```
+```cd performance-test/src```
 
 ```./run.sh```
 

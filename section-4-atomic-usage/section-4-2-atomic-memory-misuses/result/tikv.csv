@@ -1,8 +1,0 @@
-info,url
-coprocessor_plugin_api: Use atomic for allocator functions (,https://github.com//tikv/tikv/commit/0530e0eb6f29191d3475ae50402ece2fdd963fdb
-storage: support atomic operator in rawkv (,https://github.com//tikv/tikv/commit/e1209ce484cfe9f87b7f413f135078c84c964441
-cdc: fix the ordering of batch events (,https://github.com//tikv/tikv/commit/dbb2174c3382fcb3b254b56c00765b264e425a57
-raftstore: make destroy overlapped regions and apply snapshot atomica…,https://github.com//tikv/tikv/commit/8311f26b1f351fcf256b613ec48a66ae9dd0e8f5
-make apply atomic (,https://github.com//tikv/tikv/commit/898d5516a4193884013a8cfcbf17c64c3b8b9b2e
-raftstore: use atomic to control snapshot progress (,https://github.com//tikv/tikv/commit/52778686489a114d6271a6982832287145ac14a0
-store: atomically committing and changing storage. (,https://github.com//tikv/tikv/commit/12c36194d325051c9cea13c2850bab108451f146

@@ -1,7 +1,0 @@
-info,url
-Provide justification for using atomic collect counts,https://github.com//rayon-rs/rayon/commit/7d99416f7dc9eeecbbcf6f14b7cbbc46e99881c7
-Clarify the ordering of find_first etc.,https://github.com//rayon-rs/rayon/commit/f69cb7dd4cf4dd0d45dbf2f3f35b3ebae52239c4
-Note the ordering vagaries of find_first et al,https://github.com//rayon-rs/rayon/commit/cc5b61557867981aa2ecc65e69ce61b96fcd9d98
-strengthen/justify memory orderings,https://github.com//rayon-rs/rayon/commit/87cd4f53a0a4f08382e2890da2e3fc8567be7d14
-weaken the ordering requirements from SeqCst to AcqRel; Latch,https://github.com//rayon-rs/rayon/commit/37214f4173d736ec630b9858b6518464a53483ca
-Switch to relaxed ordering in some cases where I believe it is safe.,https://github.com//rayon-rs/rayon/commit/f374fc439dea3f5cd29f6f48c0698375f9995965

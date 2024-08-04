@@ -1,8 +1,7 @@
 import os
 import re
+import sys
 from collections import Counter
-
-from future.moves import sys
 
 pattern_single = re.compile(
     r"\.(load|store|swap|update|compare_and_swap|fetch_add|fetch_sub|fetch_or|fetch_xor|fetch_nand|fetch_max|fetch_min)\(\s*[\s\S]*?"
@@ -109,10 +108,10 @@ def walk_through_dir(dir_path):
         global_rate = global_atomic_operations / total_atomic_operations
     else:
         global_rate = 0
-    print(total_atomic_operations)
-    print(field_atomic_operations)
-    print(global_atomic_operations)
-    print(total_atomic_operations-field_atomic_operations-global_atomic_operations)
+    print("total_operations:", total_atomic_operations)
+    print("field_atomic_operations:", field_atomic_operations)
+    print("global_atomic_operations:", global_atomic_operations)
+    print("other_atomic_operations:", total_atomic_operations-field_atomic_operations-global_atomic_operations)
     print(ordering_counts)
     if total_atomic_operations > 0:
         print("struct:", struct_rate)
@@ -141,11 +140,9 @@ def walk_through_dir(dir_path):
     print(ordering_ratios)
 
 
-# if __name__ == "__main__":
-#     if len(sys.argv) != 2:
-#         print("Usage: python script.py <PROJECT_PATH>")
-#         sys.exit(1)
-#     project_dir = sys.argv[1]
-#     walk_through_dir(project_dir)
-source_code_dir = "./project/snarkOS"  # count/occlum/src/libos/src  count/occlum/src/libos/src/events
-walk_through_dir(source_code_dir)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <PROJECT_PATH>")
+        sys.exit(1)
+    project_dir = sys.argv[1]
+    walk_through_dir(project_dir)

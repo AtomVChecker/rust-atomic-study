@@ -12,7 +12,7 @@ commit:005c023ca94d424d8e630125e4c21320ed160031
 commit:5d7ed76b79de359ef1de2bdee83b32bd497d7cd8
 5. https://github.com/influxdata/influxdb
 commit:bb6a5c0bf6968117251617cda99cb39a5274b6dd
-6. https://github.com/occlum/occlum.git
+6. https://github.com/occlum/occlum
 commit:f54eabfa92319490e1b13075b28fef2d3d9129fd
 7. https://github.com/AleoHQ/snarkOS
 commit:e7d39272d0c008c6d67cf1fdbf0da5de8b5001f7
@@ -26,18 +26,37 @@ commit:7b555185ff9186f618b198126ee853980b187698
 commit:d0509d350ca9a6b7ec67e00d325518b9128721e3
 12. https://github.com/crossbeam-rs/crossbeam
 commit:18afbb6ed2f98e55ae5cc10578e54762232a2437
-13. https://github.com/matklad/once_cell.git
+13. https://github.com/matklad/once_cell
 commit:8f39b775effd387b175993b0091b082c4d60f921
+
 ## Usage:
 
-```cd section-4-1-atomic-usage-count```
+```cd atomic-usage-count/project```
 
-```python count.py PROJECT_PATH```
+```git clone https://github.com/AleoNet/snarkOS.git```
+
+```git checkout e7d39272d0c008c6d67cf1fdbf0da5de8b5001f7```
+
+```cd atomic-usage-count```
+
+```python count.py ./project/snarkOS```
 
 ## Output:
 
-Counter({'SeqCst': 29, 'Relaxed': 19, 'Acquire': 15, 'Release': 11, 'AcqRel': 3})
-struct: 0.8142857142857143
-global: 0.12857142857142856
-other: 0.05714285714285716
-{'SeqCst': 0.37662337662337664, 'Relaxed': 0.24675324675324675, 'AcqRel': 0.03896103896103896, 'Acquire/Release': 0.33766233766233766}
+total: 33
+
+field_atomic_operations: 28
+
+global_atomic_operations: 1
+
+other_atomic_operations: 4
+
+Counter({'SeqCst': 20, 'Relaxed': 13})
+
+struct: 0.8484848484848485
+
+global: 0.030303030303030304
+
+other: 0.12121212121212119
+
+{'SeqCst': 0.6060606060606061, 'Relaxed': 0.3939393939393939, 'Acquire/Release': 0.0}

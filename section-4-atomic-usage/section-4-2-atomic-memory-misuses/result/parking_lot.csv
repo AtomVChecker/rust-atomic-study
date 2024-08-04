@@ -1,9 +1,0 @@
-info,url
-Adjust the wasm32-unknown-unknown atomic docs,https://github.com//Amanieu/parking_lot/commit/64c5ef92e3f8ee4c922bcd2087af7d712a8375c4
-"lock_api: Add default ""atomic_usize"" feature",https://github.com//Amanieu/parking_lot/commit/e95883e52b9e5c6733481033d87983849ee01c3c
-Fix incorrect memory ordering in RwLock,https://github.com//Amanieu/parking_lot/commit/d26c284fe8413bdeeed3ef4f70e23b5919a9ffeb
-Fix memory orderings on rwlock upgrade.,https://github.com//Amanieu/parking_lot/commit/c866ba80e4c38b0119823ab93f822f8e9dae2ce7
-Add new wasm thread parker for non-atomic libstds,https://github.com//Amanieu/parking_lot/commit/013e482f51a63ac1bc9b08c2d87f445238adbf8c
-Add version detection for stabilized atomics and checked_add,https://github.com//Amanieu/parking_lot/commit/696f83fa5e8fa80698cf1fb212a8abf319660203
-relax a few atomic operations,https://github.com//Amanieu/parking_lot/commit/e9917d62ce5cabcdfed7fd874ead71988a36d0e9
-Clean up ThreadParker implementations and fix memory orderings,https://github.com//Amanieu/parking_lot/commit/b84da3a7a182b6116f0c31f066fad6e455eea56d

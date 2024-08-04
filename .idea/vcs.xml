@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/section-4-atomic-usage/section-4-1-reason-for-usage/atomic-usage-count/project/snarkOS" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/section-5-detection/AtomVChecker/examples/once_cell" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/section-5-detection/AtomVChecker/examples/rayon" vcs="Git" />
+  </component>
+</project>

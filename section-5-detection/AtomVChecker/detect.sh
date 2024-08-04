@@ -16,7 +16,7 @@ export RUSTC_WRAPPER=${PWD}/target/debug/atomvchecker
 # cargo build --release
 # export RUSTC_WRAPPER=${PWD}/target/release/atomvchecker
 export RUST_BACKTRACE=full
-export ATOMVCHECKER_LOG=info
+export ATOMVCHECKER_LOG=debug
 # To only detect RUSTSEC-2022-0006,RUSTSEC-2022-0029
 # export ATOMVCHECKER_FLAGS="--detector-kind atomicity_violation --crate-name-list RUSTSEC-2022-0006,RUSTSEC-2022-0029"
 # To skip detecting RUSTSEC-2022-0006 or RUSTSEC-2022-0029
@@ -44,7 +44,7 @@ IFS=$'\n' read -d '' -r -a lines < ${cargo_dir_file}
 for cargo_dir in ${lines[@]}
 do
         pushd ${cargo_dir} > /dev/null
-        cargo build 
+        cargo build
         popd > /dev/null
 done
 popd > /dev/null

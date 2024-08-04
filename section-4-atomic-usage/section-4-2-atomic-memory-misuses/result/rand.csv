@@ -1,4 +1,0 @@
-info,url
-Fix deprecation warnings for atomics initialization,https://github.com//rust-random/rand/commit/790aa8a002c258fe46206bbb31c9d108da3e02db
-Use atomic fork counter,https://github.com//rust-random/rand/commit/bccefbc27f6db0f59de15b6cce0b59785d383f27
-os: Fix race condition of atomics,https://github.com//rust-random/rand/commit/e0e8263c25dc291f818cd20c034912de5ae05189

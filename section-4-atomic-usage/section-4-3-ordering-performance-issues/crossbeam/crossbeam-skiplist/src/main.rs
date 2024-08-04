@@ -4,6 +4,8 @@ use crossbeam_epoch as epoch;
 use std::time::{Duration, Instant};
 use std::thread;
 use rand::random;
+use std::env;
+use std::convert::TryInto;
 
 use std::sync::{Arc, Mutex};
 fn run_test_seqcst(thread_count: usize, count: usize) -> Duration {
@@ -145,24 +147,33 @@ fn calculate_median_and_average(durations: Vec<Duration>) -> (Duration, Duration
 }
 
 fn main() {
-    // Number of tests
-    let test_runs = 10;
-    // total number of threads
-    let thread_count = 10;
-    // Number of operations per thread
-    let count = 10;
+//     // Number of tests
+//     let test_runs = 10;
+//     // total number of threads
+//     let thread_count = 10;
+//     // Number of operations per thread
+//     let count = 10;
+    let args: Vec<String> = env::args().collect();
 
+    if args.len() < 4 {
+        eprintln!("Usage: cargo run <test_runs> <thread_count> <count>");
+        return;
+    }
+
+    let test_runs: u32 = args[1].parse().expect("Error: test_runs must be an integer");
+    let thread_count: usize = args[2].parse().expect("Error: thread_count must be an integer");
+    let count: u32 = args[3].parse().expect("Error: count must be an integer");
 
     let mut durations_normal: Vec<Duration> = Vec::new();
     let mut durations_acqrel: Vec<Duration> = Vec::new();
     let mut durations_seqcst: Vec<Duration> = Vec::new();
 
     for _ in 0..test_runs {
-        durations_normal.push(run_test_normal(thread_count, count));
+        durations_normal.push(run_test_normal(thread_count, count.try_into().unwrap()));
         thread::sleep(Duration::from_secs(3));
-        durations_acqrel.push(run_test_acqrel(thread_count, count));
+        durations_acqrel.push(run_test_acqrel(thread_count, count.try_into().unwrap()));
         thread::sleep(Duration::from_secs(3));
-        durations_seqcst.push(run_test_seqcst(thread_count, count));
+        durations_seqcst.push(run_test_seqcst(thread_count, count.try_into().unwrap()));
     }
 
     let (median_normal, average_normal) = calculate_median_and_average(durations_normal);
