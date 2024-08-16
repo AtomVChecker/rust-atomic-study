@@ -36,7 +36,7 @@ These experiments use Python and Rust, the python version is 3.7.13 and the Rust
 ### AtomVChecker
 AtomVChecker is a static analyzer to detect memory ordering misuses in Rust programs. 
 
-#### 3.4.1 Example
+#### Example
 
 Test ordering_misuse
 ```sh
