@@ -16,7 +16,7 @@ Pull rust-atomic-study from GitHub.
 $ git clone https://github.com/AtomVChecker/rust-atomic-study.git
 ```
 
-### 1.1 AtomVChecker
+### 2.1 AtomVChecker
 Add the Rust components rust-src, rustc-dev and llvm-tools-preview to compile and install AtomVChecker. It currently supports rustc nightly-2023-03-09.
 
 ```sh
@@ -27,7 +27,7 @@ $ rustup component add llvm-tools-preview
 $ cargo install --path .
 ```
 
-### 1.2 Python && Rust
+### 2.2 Python && Rust
 These experiments use Python and Rust, the python version is 3.7.13 and the Rust Compiler (rustc) version is nightly-2023-03-09.
 
 
