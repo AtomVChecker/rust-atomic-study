@@ -1,5 +1,5 @@
 # The code, analysis scripts and results for ISSRE 2024 Artifact Evaluation
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13330090.svg)](https://doi.org/10.5281/zenodo.13330090)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13334676.svg)](https://doi.org/10.5281/zenodo.13334676)
 
 Version: 1.1 Paper: Understanding Atomics and Memory Ordering Issues in Real-World Rust Software (#60)
 
