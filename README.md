@@ -129,7 +129,7 @@ $ python count.py ./project/snarkOS
 ```
 
 
-Output:
+The results show that in snarkOS, out of 33 atomic operations, 28 are used in concurrent data structures, accounting for 84.85%, and one is used for global static variables, accounting for 3.03%. Of these,  SeqCst is used 20 times, while Relaxed is used 13 times:
 
 ```
 total: 33
