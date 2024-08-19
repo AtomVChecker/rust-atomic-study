@@ -146,14 +146,14 @@ other: 0.12121212121212119
 ### 4.2 Experiments in Section 4.1
 These experiments mainly shows the comparisons of atomic types with other concurrency primitives(For more details, please see [performance-test](/section-4-atomic-usage/section-4-1-reason-for-usage/performance-test)).
 
-Usages
+Usages:
 
 ```
 cd performance-test/src
 ./run.sh
 ```
 
-Output
+Output:
 ```
 Test: Repeat Count = 100, Workers = 10
 Mutex/Atomic duration ratio: 3.65
