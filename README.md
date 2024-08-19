@@ -199,7 +199,7 @@ Channel/Atomic duration ratio: 6.88
 ### 4.3 Figure 3 in Section 4.3
 Figure 3 mainly shows Performance gaps between different memory orderings at different levels of concurrency (10, 100, 1,000, 10,000 and 100,000). Due to the randomness of compiler optimizations and instruction reordering, there may be some minor differences in the correlation results(For more details, please see [ordering-performance-issues](section-4-atomic-usage/section-4-3-ordering-performance-issues)).
 
-Usages
+Usages:
 
 ```
 cd crossbeam-skiplist
@@ -213,7 +213,7 @@ cargo run <test_runs> <thread_count> <count>
 * \<count> is the number of operations each thread will perform
 
 
-Result
+The result is as follows. As an example, arm_AcqRel_vs_Relaxed shows the performance gaps between Acquire/Release and Relaxed at different concurrency levels. The performance gap is 0.68 at 10 threads concurrency and increases to 7.18 at 100,000 threads concurrency.
 ```
 arm_AcqRel_vs_Relaxed = [0.68, 1.51, 5.03, 6.24, 7.18]
 arm_86_SeqCst_vs_Relaxed = [1.62, 2.59, 7.94, 9.48, 12.54]
