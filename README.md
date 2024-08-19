@@ -197,7 +197,7 @@ Channel/Atomic duration ratio: 6.88
 ```
 
 ### 4.3 Figure 3 in Section 4.3
-Figure 3 mainly shows Performance gap for different memory orderings. Due to the randomness of compiler optimizations and instruction reordering, there may be some minor differences in the correlation results(For more details, please see [ordering-performance-issues](section-4-atomic-usage/section-4-3-ordering-performance-issues)).
+Figure 3 mainly shows Performance gaps between different memory orderings at different levels of concurrency (10, 100, 1,000, 10,000 and 100,000). Due to the randomness of compiler optimizations and instruction reordering, there may be some minor differences in the correlation results(For more details, please see [ordering-performance-issues](section-4-atomic-usage/section-4-3-ordering-performance-issues)).
 
 Usages
 
