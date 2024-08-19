@@ -68,7 +68,7 @@ If you want to check for atomic correlations, you can set the `ATOMVCHECKER_LOG`
 $ export ATOMVCHECKER_LOG=debug
 ```
 
-Each atomic correlation is represented by an AtomicInfo<atomic_place, atomic_value, atomic_operate, caller_instance, ordering, source_info>. For detailed explanations, please see Section V-C of [paper](/paper.pdf). The atomic correlation outputs for ordering_misuse is as follows:
+Each atomic correlation is represented by an AtomicInfo<atomic_place, atomic_value, atomic_operate, caller_instance, ordering, source_info> with minimal memory ordering requirements. For detailed explanations, please see Section V-C of [paper](/paper.pdf). The atomic correlation outputs for ordering_misuse is as follows:
 ```
     {
       AtomicInfo { 
