@@ -3,9 +3,8 @@ use crossbeam_skiplist::{SkipList, SkipListAcqRel, SkipListSeqCst};
 use crossbeam_epoch as epoch;
 use std::time::{Duration, Instant};
 use std::thread;
-use rand::random;
 use std::env;
-use std::convert::TryInto;
+use rand::random;
 
 use std::sync::{Arc, Mutex};
 fn run_test_seqcst(thread_count: usize, count: usize) -> Duration {
@@ -147,33 +146,31 @@ fn calculate_median_and_average(durations: Vec<Duration>) -> (Duration, Duration
 }
 
 fn main() {
-//     // Number of tests
-//     let test_runs = 10;
-//     // total number of threads
-//     let thread_count = 10;
-//     // Number of operations per thread
-//     let count = 10;
+
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 4 {
         eprintln!("Usage: cargo run <test_runs> <thread_count> <count>");
         return;
     }
-
-    let test_runs: u32 = args[1].parse().expect("Error: test_runs must be an integer");
+    // Number of tests
+    let test_runs: usize = args[1].parse().expect("Error: test_runs must be an integer");
+    // total number of threads
     let thread_count: usize = args[2].parse().expect("Error: thread_count must be an integer");
-    let count: u32 = args[3].parse().expect("Error: count must be an integer");
+    // Number of operations per thread
+    let count: usize = args[3].parse().expect("Error: count must be an integer");
+
 
     let mut durations_normal: Vec<Duration> = Vec::new();
     let mut durations_acqrel: Vec<Duration> = Vec::new();
     let mut durations_seqcst: Vec<Duration> = Vec::new();
 
     for _ in 0..test_runs {
-        durations_normal.push(run_test_normal(thread_count, count.try_into().unwrap()));
+        durations_normal.push(run_test_normal(thread_count, count));
         thread::sleep(Duration::from_secs(3));
-        durations_acqrel.push(run_test_acqrel(thread_count, count.try_into().unwrap()));
+        durations_acqrel.push(run_test_acqrel(thread_count, count));
         thread::sleep(Duration::from_secs(3));
-        durations_seqcst.push(run_test_seqcst(thread_count, count.try_into().unwrap()));
+        durations_seqcst.push(run_test_seqcst(thread_count, count));
     }
 
     let (median_normal, average_normal) = calculate_median_and_average(durations_normal);
@@ -192,16 +189,14 @@ fn main() {
     println!("Average SeqCst: {:?}", average_seqcst);
 
     // Calculate and print performance gaps
-    let diff_median_percent = ((median_seqcst.as_millis() as f64 - median_normal.as_millis() as f64 ) / median_normal.as_millis() as f64) * 100.0;
-    let diff_average_percent = ((average_seqcst.as_millis() as f64 - average_normal.as_millis() as f64 ) / average_normal.as_millis() as f64) * 100.0;
+    let diff_median_percent = ((median_seqcst.as_secs_f64() - median_normal.as_secs_f64()) / median_normal.as_secs_f64()) * 100.0;
+    let diff_average_percent = ((average_seqcst.as_secs_f64() - average_normal.as_secs_f64()) / average_normal.as_secs_f64()) * 100.0;
 
-    // Calculating the performance gap between AcqRel and Normal
-    let diff_median_acqrel_normal_percent = ((median_acqrel.as_millis() as f64 - median_normal.as_millis() as f64) / median_normal.as_millis() as f64) * 100.0;
-    let diff_average_acqrel_normal_percent = ((average_acqrel.as_millis() as f64 - average_normal.as_millis() as f64) / average_normal.as_millis() as f64) * 100.0;
+    let diff_median_acqrel_normal_percent = ((median_acqrel.as_secs_f64() - median_normal.as_secs_f64()) / median_normal.as_secs_f64()) * 100.0;
+    let diff_average_acqrel_normal_percent = ((average_acqrel.as_secs_f64() - average_normal.as_secs_f64()) / average_normal.as_secs_f64()) * 100.0;
 
-    // Calculating the performance gap between AcqRel and SeqCst
-    let diff_median_acqrel_seqcst_percent = ((median_seqcst.as_millis() as f64 - median_acqrel.as_millis() as f64) / median_acqrel.as_millis() as f64) * 100.0;
-    let diff_average_acqrel_seqcst_percent = ((average_seqcst.as_millis() as f64 - average_acqrel.as_millis() as f64) / average_acqrel.as_millis() as f64) * 100.0;
+    let diff_median_acqrel_seqcst_percent = ((median_seqcst.as_secs_f64() - median_acqrel.as_secs_f64()) / median_acqrel.as_secs_f64()) * 100.0;
+    let diff_average_acqrel_seqcst_percent = ((average_seqcst.as_secs_f64() - average_acqrel.as_secs_f64()) / average_acqrel.as_secs_f64()) * 100.0;
 
     println!("Median performance difference (Normal vs AcqRel): {:.2}%", diff_median_acqrel_normal_percent);
     println!("Median performance difference (Normal vs SeqCst): {:.2}%", diff_median_percent);
