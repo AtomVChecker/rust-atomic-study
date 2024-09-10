@@ -42,6 +42,7 @@ AtomVChecker is a static analyzer to detect memory ordering misuses in Rust prog
 
 Test ordering_misuse
 ```sh
+# Execute from the section-5-detection/AtomVChecker
 $ ./detect.sh examples/ordering_misuse
 ```
 It will print one performance loss caused by incorrect use of strong memory ordering(SMO) in json format, like the following one:
