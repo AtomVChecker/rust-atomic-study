@@ -125,8 +125,9 @@ TABLE 3 mainly shows the atomic usage in real-world Rust programs(For more detai
 Usage:
 
 ```sh
-$ cd atomic-usage-count/project
+$ cd section-4-atomic-usage/section-4-1-reason-for-usage/atomic-usage-count/project
 $ git clone https://github.com/AleoNet/snarkOS.git
+$ cd snarkOS
 $ git checkout e7d39272d0c008c6d67cf1fdbf0da5de8b5001f7
 $ cd atomic-usage-count
 $ python count.py ./project/snarkOS
@@ -145,6 +146,14 @@ struct: 0.8484848484848485
 global: 0.030303030303030304
 other: 0.12121212121212119
 {'SeqCst': 0.6060606060606061, 'Relaxed': 0.3939393939393939, 'Acquire/Release': 0.0}
+```
+Script:
+
+You can run `atomic_usage.sh` to automatically download and verify each benchmark.
+
+```sh
+cd section-4-atomic-usage/section-4-1-reason-for-usage/atomic-usage-count
+./atomic_usage.sh
 ```
 
 ### 4.2 Experiments in Section 4.1
