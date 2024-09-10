@@ -97,6 +97,7 @@ You can modify `detect.sh` to use release vesion of AtomVChecker to detect large
 
 For ease of use, you can also run cargo atomvchecker
 ```sh
+# Execute from the section-5-detection/AtomVChecker
 $ cd examples/ordering_misuse; cargo clean; cargo atomvchecker -k atomicity_violation
 ```
 Note that you need to run
