@@ -240,6 +240,7 @@ For better reproducibility of results, the recommended values are:
 Due to the randomness of compiler optimizations and instruction reordering, results may sometimes vary. We conducted numerous experiments and used averaging and median values to reduce error. For higher concurrency (e.g., `thread_count=100000`), we set `test_runs` to 1 as testing can be time-consuming.
 
 Result:
+
 The result is as follows. As an example, arm_AcqRel_vs_Relaxed shows the performance gaps between Acquire/Release and Relaxed at different concurrency levels. The performance gap is 0.68 at 10 threads concurrency and increases to 7.18 at 100,000 threads concurrency.
 ```
 arm_AcqRel_vs_Relaxed = [0.68, 1.51, 5.03, 6.24, 7.18]
