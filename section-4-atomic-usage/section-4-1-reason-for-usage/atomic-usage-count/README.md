@@ -60,3 +60,11 @@ global: 0.030303030303030304
 other: 0.12121212121212119
 
 {'SeqCst': 0.6060606060606061, 'Relaxed': 0.3939393939393939, 'Acquire/Release': 0.0}
+
+## Script:
+
+You can run `atomic_usage.sh` to automatically download and verify each benchmark.
+
+```cd section-4-1-atomic-usage-count```
+
+```./atomic_usage.sh```
