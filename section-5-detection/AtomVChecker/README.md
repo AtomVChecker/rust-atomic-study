@@ -106,7 +106,7 @@ You can modify `detect.sh` to use release vesion of AtomVChecker to detect large
 
 For ease of use, you can also run cargo atomvchecker
 ```sh
-$ cd examples/RUSTSEC_2022_0006; cargo clean; cargo atomvchecker -k atomicity_violation
+$ cd section-5-detection/AtomVChecker/examples/RUSTSEC_2022_0006; cargo clean; cargo atomvchecker -k atomicity_violation
 ```
 Note that you need to run
 ```sh
@@ -119,6 +119,8 @@ You can also specify blacklist or whitelist of crate names.
 The `-b` implies the list is a blacklist.
 
 The `-l` is followed by a list of crate names seperated by commas.
+
+The `-k` implies the type of detection, currently only supporting `atomicity_violation`.
 ```sh
 $ cd YourProject; cargo clean; cargo atomvchecker -k atomicity_violation -b -l cc,tokio_util,indicatif
 ```
