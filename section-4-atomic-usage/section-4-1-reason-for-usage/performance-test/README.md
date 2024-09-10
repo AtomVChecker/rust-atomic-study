@@ -2,7 +2,7 @@
 
 ## Usages
 
-```cd performance-test/src```
+```cd section-4-atomic-usage/section-4-1-reason-for-usage/performance-test/src```
 
 ```./run.sh```
 
