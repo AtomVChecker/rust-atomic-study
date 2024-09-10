@@ -24,6 +24,7 @@ You can either override your rustc version or specify rust-toolchains in your pr
 ## Example
 Test RUSTSEC_2022_0006 and RUSTSEC_2022_0029
 ```sh
+# Execute from the section-5-detection/AtomVChecker
 $ ./detect.sh examples/RUSTSEC_2022_0006
 ```
 It will print one atomic concurrency bug(ARC bug) in json format, like the following one:
@@ -43,7 +44,8 @@ It will print one atomic concurrency bug(ARC bug) in json format, like the follo
     ]
 ```
 
-```
+```sh
+# Execute from the section-5-detection/AtomVChecker
 $ ./detect.sh toys/RUSTSEC_2022_0029
 ```
 It will print one atomic concurrency bug(CIU bug):
