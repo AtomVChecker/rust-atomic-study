@@ -22,7 +22,7 @@ $ git clone https://github.com/AtomVChecker/rust-atomic-study.git
 Add the Rust components rust-src, rustc-dev and llvm-tools-preview to compile and install AtomVChecker. It currently supports rustc nightly-2023-03-09.
 
 ```sh
-$ cd AtomVChecker
+$ cd section-5-detection/AtomVChecker
 $ rustup component add rust-src
 $ rustup component add rustc-dev
 $ rustup component add llvm-tools-preview
