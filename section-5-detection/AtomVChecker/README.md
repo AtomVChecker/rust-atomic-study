@@ -11,7 +11,7 @@ Please refer to our paper for more memory ordering misuse categories in Rust.
 Currently supports rustc nightly-2023-03-09
 ```sh
 $ git clone https://github.com/AtomVChecker/AtomVChecker.git
-$ cd AtomVChecker
+$ cd section-5-detection/AtomVChecker
 $ rustup component add rust-src
 $ rustup component add rustc-dev
 $ rustup component add llvm-tools-preview
