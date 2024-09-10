@@ -258,7 +258,8 @@ Atomic operations can correlate with the critical state of non-atomic memory add
 
 Example: RUSTSEC_2022_0029
 
-```
+```sh
+# Execute from the section-5-detection/AtomVChecker
 $ ./detect.sh toys/RUSTSEC_2022_0029
 ```
 It will print one atomic concurrency bug(CIU bug):
@@ -294,6 +295,7 @@ Such bugs manifest only in AtomicPtr and are architecture-specific, such as DEC 
 Example: RUSTSEC_2022_0006
 
 ```sh
+# Execute from the section-5-detection/AtomVChecker
 $ ./detect.sh examples/RUSTSEC_2022_0006
 ```
 It will print one atomic concurrency bug(ARC bug) in json format, like the following one:
@@ -319,6 +321,7 @@ This occurs when incorrectly use of strong memory ordering
 Example: fragile
 
 ```sh
+# Execute from the section-5-detection/AtomVChecker
 $ ./detect.sh examples/fragile
 ```
 It will print two performance losses caused by incorrect use of strong memory ordering(SMO) in json format, like the following one:
