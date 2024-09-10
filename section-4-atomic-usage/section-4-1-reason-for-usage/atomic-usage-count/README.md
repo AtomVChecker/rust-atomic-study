@@ -31,9 +31,11 @@ commit:8f39b775effd387b175993b0091b082c4d60f921
 
 ## Usage:
 
-```cd atomic-usage-count/project```
+```cd section-4-atomic-usage/section-4-1-reason-for-usage/atomic-usage-count/project```
 
 ```git clone https://github.com/AleoNet/snarkOS.git```
+
+```cd snarkOS```
 
 ```git checkout e7d39272d0c008c6d67cf1fdbf0da5de8b5001f7```
 
@@ -65,6 +67,6 @@ other: 0.12121212121212119
 
 You can run `atomic_usage.sh` to automatically download and verify each benchmark.
 
-```cd section-4-1-atomic-usage-count```
+```cd section-4-atomic-usage/section-4-1-reason-for-usage/atomic-usage-count```
 
 ```./atomic_usage.sh```
