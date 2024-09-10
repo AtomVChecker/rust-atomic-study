@@ -157,12 +157,12 @@ cd section-4-atomic-usage/section-4-1-reason-for-usage/atomic-usage-count
 ```
 
 ### 4.2 Experiments in Section 4.1
-These experiments compare the performance of atomic operations and other concurrency primitives at different  concurrency levels (Workers at 10 and 1000) and operation counts (Repeat Count of 100, 500, 800, 1000, and 1500)(For more details, please see [performance-test](/section-4-atomic-usage/section-4-1-reason-for-usage/performance-test)).
+These experiments compare the performance of atomic operations and other concurrency primitives at different concurrency levels (Workers at 10 and 1000) and operation counts (Repeat Count of 100, 500, 800, 1000, and 1500)(For more details, please see [performance-test](/section-4-atomic-usage/section-4-1-reason-for-usage/performance-test)).
 
 Usages:
 
 ```
-cd performance-test/src
+cd section-4-atomic-usage/section-4-1-reason-for-usage/performance-test/src
 ./run.sh
 ```
 
