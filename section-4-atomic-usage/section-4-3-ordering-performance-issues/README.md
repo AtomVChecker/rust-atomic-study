@@ -12,8 +12,21 @@ To increase the accuracy of our experimental results, we set up an environment w
 
 * `thread_count` is the total number of threads to spawn for each test
 
-
 * `count` is the number of operations each thread will perform
+
+## Recommended Values
+
+For better reproducibility of results, the recommended values are:
+
+| Test Runs | Thread Count | Count |
+|-----------|--------------|-------|
+| 10        | 10           | 100   |
+| 10        | 100          | 100   |
+| 10        | 1000         | 100   |
+| 10        | 10000        | 100   |
+| 1         | 100000       | 100   |
+
+Due to the randomness of compiler optimizations and instruction reordering, results may sometimes vary. We conducted numerous experiments and used averaging and median values to reduce error. For higher concurrency (e.g., `thread_count=100000`), we set `test_runs` to 1 as testing can be time-consuming.
 
 
 ## Result
