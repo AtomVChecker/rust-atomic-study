@@ -4,15 +4,16 @@ To increase the accuracy of our experimental results, we set up an environment w
 
 ## Usages
 
-```cd crossbeam-skiplist```
+```cd section-4-atomic-usage/section-4-3-ordering-performance-issues/crossbeam/crossbeam-skiplist```
 
 ```cargo run <test_runs> <thread_count> <count>```
 
-* <test_runs> is the number of test iterations to perform
+* `test_runs` is the number of test iterations to perform
 
-* <thread_count> is the total number of threads to spawn for each test
+* `thread_count` is the total number of threads to spawn for each test
 
-* <count> is the number of operations each thread will perform
+
+* `count` is the number of operations each thread will perform
 
 
 ## Result
