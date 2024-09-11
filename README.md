@@ -405,7 +405,7 @@ $ python3 mem_usage.py
 
 Install:
 
-Follow the installation steps to set up Lockbud and test the examples, but it does not detect memory ordering misuses.
+Follow the [installation steps](https://github.com/BurtonQin/lockbud?tab=readme-ov-file#install) to set up Lockbud and test the examples, but it does not detect memory ordering misuses.
 
 Example:
 
