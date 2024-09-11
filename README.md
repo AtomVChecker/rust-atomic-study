@@ -447,3 +447,9 @@ Community [discussions](https://github.com/Amanieu/thread_local-rs/issues/33) on
 #### loom:
 
 [Loom](https://github.com/tokio-rs/loom) is a concurrency permutation testing tool for Rust.
+
+According to the [Loom documentation](https://docs.rs/loom/latest/loom/), Loom detects only thread interleaving issues and requires manual modifications to the project's internal source code, including atomic operations.
+
+Result:
+
+Loom can detect memory ordering issues in RUSTSEC-2022-0029 and RUSTSEC-2022-0006, but it cannot identify related issues in other projects.
