@@ -395,3 +395,55 @@ Run `mem_usage.py` before using AtomVChecker to detect the project; it will log 
 # Execute from the section-5-detection/AtomVChecker/examples
 $ python3 mem_usage.py
 ```
+
+
+### 3.6 Comparison with Other Approaches
+
+#### lockbud:
+
+[Lockbud](https://github.com/BurtonQin/lockbud) can statically detect memory issues, concurrency bugs, and potential panic points in Rust.
+
+Install:
+
+Follow the installation steps to set up Lockbud and test the examples, but it does not detect memory ordering misuses.
+
+Example:
+
+```sh
+# Copy RUSTSEC-2022-0029 to the toys directory in Lockbud.
+# Execute from the directory where detect.sh is located.
+$ ./detect.sh toys/RUSTSEC-2022-0029
+```
+
+Result:
+
+Lockbud cannot detect memory ordering misuses, and it fails to identify these issues in other projects as well.
+
+
+#### Miri:
+
+[Miri](https://github.com/rust-lang/miri) is an interpreter for Rust's mid-level intermediate representation.
+
+Install:
+
+```sh
+rustup +nightly-2023-03-08 component add miri
+```
+
+Example:
+
+```sh
+# Execute from the section-5-detection/AtomVChecker/examples/RUSTSEC-2022-0029
+cargo miri run
+```
+
+Result:
+
+Miri can detect issues in RUSTSEC-2022-0029. For other projects, Miri is unable to detect the relevant issues.
+
+Community [discussions](https://github.com/Amanieu/thread_local-rs/issues/33) on RUSTSEC-2022-0006 suggest that more complex test cases are needed for Miri to expose such issues, highlighting its detection limitations.
+
+
+#### loom:
+
+[Loom](https://github.com/tokio-rs/loom) is a concurrency permutation testing tool for Rust.
