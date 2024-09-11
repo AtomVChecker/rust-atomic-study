@@ -1,4 +1,4 @@
-# Result
+# Results
 
 ## Atomic correlation analysis
 
