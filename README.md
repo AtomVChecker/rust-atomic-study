@@ -383,3 +383,15 @@ As an example, the atomic correlation outputs for RUSTSEC-2022-0029 is as follow
         }: {Release}
     }: 2
 ```
+
+### 3.5 Memory Usage
+We provide a memory usage monitoring script designed for environments where no other processes interfere with memory. The script logs memory usage every second.
+
+Usages:
+
+Run `mem_usage.py` before using AtomVChecker to detect the project; it will log memory usage every second.
+
+```sh
+# Execute from the section-5-detection/AtomVChecker/examples
+$ python3 mem_usage.py
+```
