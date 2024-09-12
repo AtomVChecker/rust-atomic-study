@@ -318,7 +318,7 @@ It will print one atomic concurrency bug(ARC bug) in json format, like the follo
 ```
 
 #### Performance loss caused by incorrect use of strong memory ordering(SMO)
-This occurs when incorrectly use of strong memory ordering
+This occurs when incorrectly use of strong memory ordering. For each benchmark, download it to the `section-5-detection/AtomVChecker/examples` and switch to the corresponding version listed in [Table 9](section-5-detection/README.md). You can run the tests just like in the `fragile` example. However, some projects require specific test cases to trigger memory ordering issues, and projects like `snarkOS` and `Occlum` can be especially time-consuming.
 
 Example: fragile
 
