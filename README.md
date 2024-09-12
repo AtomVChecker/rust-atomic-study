@@ -385,7 +385,7 @@ As an example, the atomic correlation outputs for RUSTSEC-2022-0029 is as follow
 ```
 
 ### 3.5 Memory Usage
-We provide a memory usage monitoring script designed for environments where no other processes interfere with memory. The script logs memory usage every second.
+We provide a memory usage monitoring script designed for environments where no other processes interfere with memory. The script logs record the peak memory usage every second.
 
 Usages:
 
