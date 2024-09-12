@@ -323,6 +323,10 @@ This occurs when incorrectly use of strong memory ordering. For each benchmark, 
 Example: fragile
 
 ```sh
+# Execute from the section-5-detection/AtomVChecker/examples
+# git clone https://github.com/mitsuhiko/fragile.git
+# cd fragile
+# git checkout 2.0.0
 # Execute from the section-5-detection/AtomVChecker
 $ ./detect.sh examples/fragile
 ```
