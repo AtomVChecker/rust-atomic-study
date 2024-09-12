@@ -394,6 +394,33 @@ As an example, the atomic correlation outputs for RUSTSEC-2022-0029 is as follow
     }: 2
 ```
 
+For each benchmark in Table 8, the corresponding projects and commits are listed below.
+
+| Crate                                     | Commit                                      |
+|-------------------------------------------|---------------------------------------------|
+| [once_cell](https://github.com/matklad/once_cell)      | `8f39b775effd387b175993b0091b082c4d60f921`    |
+| [parking_lot](https://github.com/Amanieu/parking_lot)    | `0b296160941275d8df757066dd26361d6ae5d455`    |
+| [rayon](https://github.com/rayon-rs/rayon)         | `d1b18e616eec5ce8520aecb31054b180006527a8`    |
+| [crossbeam](https://github.com/crossbeam-rs/crossbeam) | `18afbb6ed2f98e55ae5cc10578e54762232a2437`    |
+
+To run the benchmarks, clone the repositories and switch to the corresponding commit.
+
+Example: Once_cell
+
+```sh
+# Execute from the section-5-detection/AtomVChecker/examples
+$ git clone https://github.com/matklad/once_cell.git
+$ cd once_cell
+$ git checkout 8f39b775effd387b175993b0091b082c4d60f921
+# Execute from the section-5-detection/AtomVChecker
+$ ./detect.sh examples/once_cell
+```
+
+Result:
+
+AtomVChecker will output atomic correlations and atomic correlation violations. We omit the analysis of memory ordering misuses in the test and example code. Additionally, the same atomic operation may be invoked multiple times along a code path, which can result in some redundant outputs.
+
+
 ### 3.5 Memory Usage
 We provide a memory usage monitoring script designed for environments where no other processes interfere with memory. The script logs record the peak memory usage every second.
 
