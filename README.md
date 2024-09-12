@@ -255,7 +255,11 @@ AtomVChecker currently detects three types of memory ordering misuse. For the fu
 
 TABLE 8 and TABLE 9 demonstrate the evaluation result of AtomVChecker, including the result of atomic correlations and atomic correlation violations(For the total results, see [atomic correlations]([section-5-detection/README.md](https://github.com/AtomVChecker/rust-atomic-study/blob/main/section-5-detection/README.md#atomic-correlations)) and [atomic correlation violations](https://github.com/AtomVChecker/rust-atomic-study/blob/main/section-5-detection/README.md#memory-ordering-misuses)).
 
-#### critical-state inconsistent update bug(CIU)
+#### Atomic Correlation Violations
+
+For each benchmark, download it to the `section-5-detection/AtomVChecker/examples` and switch to the corresponding version listed in [Table 9](section-5-detection/README.md). You can run the tests just like in the `fragile` example. However, some projects require specific test cases to trigger memory ordering issues, and projects like `snarkOS` and `Occlum` can be especially time-consuming.
+
+##### critical-state inconsistent update bug(CIU)
 Atomic operations can correlate with the critical state of non-atomic memory addresses. In weakly ordered architectures, such as ARM64, atomic correlation violations occur when atomic operations with weak memory orderings in concurrent code cause other threads to fail to synchronize the changes to these critical states, which can lead to critical-state inconsistent update bug
 
 Example: RUSTSEC_2022_0029
@@ -290,7 +294,7 @@ It will print one atomic concurrency bug(CIU bug):
 ```
 
 
-#### AtomicPtr related Concurrency bug(ARC)
+##### AtomicPtr related Concurrency bug(ARC)
 
 Such bugs manifest only in AtomicPtr and are architecture-specific, such as DEC Alpha that lacks data dependency. AtomicPtr operations target the addresses, which mean that the corresponding content operations are not atomic. Therefore, AtomicPtr inherently establishes an atomic correlation between the atomic pointer and the content. Atomic correlation violations occur when atomic operations with weak memory orderings in concurrent code cause other threads to fail to synchronize the content pointed by the atomic pointer, which can result in atomicPtr related Concurrency bug.
 
@@ -317,8 +321,8 @@ It will print one atomic concurrency bug(ARC bug) in json format, like the follo
     ]
 ```
 
-#### Performance loss caused by incorrect use of strong memory ordering(SMO)
-This occurs when incorrectly use of strong memory ordering. For each benchmark, download it to the `section-5-detection/AtomVChecker/examples` and switch to the corresponding version listed in [Table 9](section-5-detection/README.md). You can run the tests just like in the `fragile` example. However, some projects require specific test cases to trigger memory ordering issues, and projects like `snarkOS` and `Occlum` can be especially time-consuming.
+##### Performance loss caused by incorrect use of strong memory ordering(SMO)
+This occurs when incorrectly use of strong memory ordering. 
 
 Example: fragile
 
