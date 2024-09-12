@@ -253,7 +253,7 @@ arm_SeqCst_vs_AcqRel = [0.93, 1.06, 2.77, 2.86, 5.00]
 ### 3.4 AtomVChecker
 AtomVChecker currently detects three types of memory ordering misuse. For the full detail, please check our ISSRE 2024 paper.
 
-TABLE 8 and TABLE 9 demonstrate the evaluation result of AtomVChecker, including the result of atomic correlations and atomic correlation violations(For the total results, see [atomic correlations](section-5-detection/README.md) and Table 5 in Section 6).
+TABLE 8 and TABLE 9 demonstrate the evaluation result of AtomVChecker, including the result of atomic correlations and atomic correlation violations(For the total results, see [atomic correlations]([section-5-detection/README.md](https://github.com/AtomVChecker/rust-atomic-study/blob/main/section-5-detection/README.md#atomic-correlations)) and [atomic correlation violations](https://github.com/AtomVChecker/rust-atomic-study/blob/main/section-5-detection/README.md#memory-ordering-misuses)).
 
 #### critical-state inconsistent update bug(CIU)
 Atomic operations can correlate with the critical state of non-atomic memory addresses. In weakly ordered architectures, such as ARM64, atomic correlation violations occur when atomic operations with weak memory orderings in concurrent code cause other threads to fail to synchronize the changes to these critical states, which can lead to critical-state inconsistent update bug
