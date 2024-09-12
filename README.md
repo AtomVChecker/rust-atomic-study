@@ -11,6 +11,8 @@ The code and scripts for the tools we build are published in this repository. Th
 
 - section-5-detection: a detailed overview of AtomVChecker, including its code and experimental examples that demonstrate its effectiveness in detecting memory ordering misuses in Rust(see [AtomVChecker](section-5-detection/AtomVChecker))
 
+Information about memory ordering misuses detected by AtomVChecker are listed in [Memory ordering misuses](section-5-detection/README.md).
+
 ## 2. Environment Setup
 
 Pull rust-atomic-study from GitHub.
