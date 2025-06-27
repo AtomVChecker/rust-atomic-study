@@ -5,14 +5,14 @@ extern crate rustc_hir;
 
 use std::path::PathBuf;
 
+use crate::analysis::callgraph::CallGraph;
 use crate::options::{CrateNameList, DetectorKind, Options};
-use log::{warn, debug};
+use log::{debug, warn};
 use rustc_driver::Compilation;
 use rustc_hir::def_id::LOCAL_CRATE;
 use rustc_interface::interface;
 use rustc_middle::mir::mono::MonoItem;
 use rustc_middle::ty::{Instance, ParamEnv, TyCtxt};
-use crate::analysis::callgraph::CallGraph;
 
 use crate::detector::atomic::AtomicityViolationDetector;
 use crate::detector::report::Report;
@@ -79,7 +79,11 @@ impl rustc_driver::Callbacks for ATOMVCHECKERCallbacks {
 }
 
 impl ATOMVCHECKERCallbacks {
-    fn analyze_with_atomvchecker<'tcx>(&mut self, _compiler: &interface::Compiler, tcx: TyCtxt<'tcx>) {
+    fn analyze_with_atomvchecker<'tcx>(
+        &mut self,
+        _compiler: &interface::Compiler,
+        tcx: TyCtxt<'tcx>,
+    ) {
         // Skip crates by names (white or black list).
         let crate_name = tcx.crate_name(LOCAL_CRATE).to_string();
         match &self.options.crate_name_list {
@@ -125,7 +129,7 @@ impl ATOMVCHECKERCallbacks {
 }
 
 fn report_stats(crate_name: &str, reports: &[Report]) -> String {
-    let mut atomic_correlation_violation_possibly = 0; 
+    let mut atomic_correlation_violation_possibly = 0;
     for report in reports {
         match report {
             Report::AtomicCorrelationViolation(_) => {
@@ -133,6 +137,8 @@ fn report_stats(crate_name: &str, reports: &[Report]) -> String {
             }
         }
     }
-    format!("crate {} contains atomic_correlation_violation: {{ possibly: {} }}", crate_name, atomic_correlation_violation_possibly)
+    format!(
+        "crate {} contains atomic_correlation_violation: {{ possibly: {} }}",
+        crate_name, atomic_correlation_violation_possibly
+    )
 }
-

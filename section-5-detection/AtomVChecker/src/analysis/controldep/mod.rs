@@ -4,10 +4,9 @@ extern crate rustc_middle;
 
 use std::collections::HashSet;
 
+use crate::analysis::postdom::{post_dominators, EndsControlFlowGraph};
 use rustc_data_structures::fx::FxHashSet;
 use rustc_index::vec::{Idx, IndexVec};
-use crate::analysis::postdom::{post_dominators, EndsControlFlowGraph};
-
 
 #[derive(Clone, Debug)]
 pub struct ControlDeps<N: Idx> {
@@ -31,7 +30,7 @@ pub fn control_deps<G: EndsControlFlowGraph>(graph: G) -> ControlDeps<G::Node> {
                     parents[a].insert(a);
                     banch_node.insert(a);
                 }
-                
+
                 for c in pdt.post_dominators(b) {
                     if c == l {
                         break;
@@ -40,7 +39,6 @@ pub fn control_deps<G: EndsControlFlowGraph>(graph: G) -> ControlDeps<G::Node> {
                         banch_node.insert(a);
                     }
                 }
-
             } else {
                 // (fake) end node
                 for c in pdt.post_dominators(b) {
@@ -54,8 +52,8 @@ pub fn control_deps<G: EndsControlFlowGraph>(graph: G) -> ControlDeps<G::Node> {
     for c in pdt.post_dominators(root) {
         parents[c].insert(root);
     }
-    ControlDeps { 
+    ControlDeps {
         parents,
         banch_node,
-     }
+    }
 }

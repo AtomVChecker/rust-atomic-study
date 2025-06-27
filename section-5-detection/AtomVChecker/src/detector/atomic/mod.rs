@@ -1253,4 +1253,3 @@ fn calculate_min_ordering(ord_set: &HashSet<AtomicOrd>) -> Vec<AtomicOrd> {
             .collect()
     })
 }
-
