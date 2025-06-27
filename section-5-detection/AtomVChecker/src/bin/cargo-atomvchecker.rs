@@ -54,11 +54,19 @@ fn in_cargo_atomvchecker() {
     cmd.env("ATOMVCHECKER_LOG", "info");
     let args = std::env::args().skip(2);
     let mut flags = Vec::new();
+
+    let mut is_checker_flags = true;
     for arg in args {
         if arg == "--" {
-            break;
+            is_checker_flags = false;
+            continue;
         }
-        flags.push(arg);
+        if is_checker_flags {
+            flags.push(arg);
+        } else {
+            // all args after `--` will be passed to cargo build
+            cmd.arg(arg);
+        }
     }
     let flags = flags.join(" ");
     cmd.env("ATOMVCHECKER_FLAGS", flags);
