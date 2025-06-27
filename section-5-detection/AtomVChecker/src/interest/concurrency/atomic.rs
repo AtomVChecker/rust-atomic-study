@@ -11,7 +11,7 @@ use petgraph::Direction::Incoming;
 use rustc_middle::mir::{
     BasicBlockData, Body, Local, Operand, Place, PlaceRef, Rvalue, StatementKind, TerminatorKind,
 };
-use rustc_middle::ty::{self, Instance, TyCtxt};
+use rustc_middle::ty::{self, Instance, TyCtxt, TypingEnv};
 use std::cmp::{Ordering, PartialOrd};
 use std::collections::HashMap;
 
@@ -118,7 +118,7 @@ pub enum AtomicInstructions {
 
 impl AtomicInstructions {
     pub fn from_instance<'tcx>(instance: Instance<'tcx>, tcx: TyCtxt<'tcx>) -> Option<Self> {
-        let path = tcx.def_path_str_with_substs(instance.def_id(), instance.substs);
+        let path = tcx.def_path_str(instance.def_id());
         let rmw_operations = [
             "swap",
             "fetch_add",
@@ -199,17 +199,17 @@ impl<'a, 'tcx> AtomicCollector<'a, 'tcx> {
                         match operate {
                             AtomicInstructions::CompareExchange => {
                                 // _14 = AtomicPtr::<Waiter>::compare_exchange(move _15, move _16, move _17, move _20, move _21) -> bb7;
-                                atomic_arg = args.get(0).unwrap().place();
+                                atomic_arg = args.get(0).unwrap().node.place();
 
                                 influence_value.push(*destination);
 
-                                let write_value = args.get(2).and_then(|arg1| arg1.place());
+                                let write_value = args.get(2).and_then(|arg1| arg1.node.place());
                                 if let Some(place) = write_value {
                                     influence_value.push(place);
                                 }
 
                                 let succ_ordering_place =
-                                    args.get(3).and_then(|arg1| arg1.place()).unwrap();
+                                    args.get(3).and_then(|arg1| arg1.node.place()).unwrap();
                                 if let Some(succ_ordering) = AtomicOrd::from_ordering(
                                     &body[callsite.block],
                                     &succ_ordering_place,
@@ -218,7 +218,7 @@ impl<'a, 'tcx> AtomicCollector<'a, 'tcx> {
                                 }
                                 // ordering_type.push(AtomicOrd::from_ordering(&body[callsite.block], &succ_ordering_place));
                                 let fail_ordering_place =
-                                    args.get(4).and_then(|arg1| arg1.place()).unwrap();
+                                    args.get(4).and_then(|arg1| arg1.node.place()).unwrap();
                                 if let Some(fail_ordering) = AtomicOrd::from_ordering(
                                     &body[callsite.block],
                                     &fail_ordering_place,
@@ -230,12 +230,12 @@ impl<'a, 'tcx> AtomicCollector<'a, 'tcx> {
                             }
                             AtomicInstructions::Load => {
                                 // _3 = AtomicPtr::<Waiter>::load(move _4, move _5) -> bb1;
-                                atomic_arg = args.get(0).unwrap().place();
+                                atomic_arg = args.get(0).unwrap().node.place();
 
                                 influence_value.push(*destination);
 
                                 let ordering_place =
-                                    args.get(1).and_then(|arg1| arg1.place()).unwrap();
+                                    args.get(1).and_then(|arg1| arg1.node.place()).unwrap();
                                 if let Some(ordering) =
                                     AtomicOrd::from_ordering(&body[callsite.block], &ordering_place)
                                 {
@@ -245,15 +245,15 @@ impl<'a, 'tcx> AtomicCollector<'a, 'tcx> {
                             }
                             AtomicInstructions::Store => {
                                 // _36 = AtomicBool::store(move _37, const true, move _38) -> [return: bb10, unwind: bb13];
-                                atomic_arg = args.get(0).unwrap().place();
+                                atomic_arg = args.get(0).unwrap().node.place();
 
-                                let write_place = args.get(1).and_then(|arg1| arg1.place());
+                                let write_place = args.get(1).and_then(|arg1| arg1.node.place());
                                 if let Some(place) = write_place {
                                     influence_value.push(place);
                                 }
 
                                 let ordering_place =
-                                    args.get(2).and_then(|arg1| arg1.place()).unwrap();
+                                    args.get(2).and_then(|arg1| arg1.node.place()).unwrap();
                                 if let Some(ordering) =
                                     AtomicOrd::from_ordering(&body[callsite.block], &ordering_place)
                                 {
@@ -263,21 +263,19 @@ impl<'a, 'tcx> AtomicCollector<'a, 'tcx> {
                             }
                             AtomicInstructions::ReadModifyWrite => {
                                 // _2 = AtomicPtr::<Waiter>::swap(move _3, move _4, move _5) -> bb1;
-                                let path = self.tcx.def_path_str_with_substs(
-                                    self.instance.def_id(),
-                                    self.instance.substs,
-                                );
+                                let path = self.tcx.def_path_str(self.instance.def_id());
                                 if path.ends_with("compare_and_swap") {
-                                    atomic_arg = args.get(0).unwrap().place();
+                                    atomic_arg = args.get(0).unwrap().node.place();
 
                                     influence_value.push(*destination);
 
-                                    let write_value = args.get(2).and_then(|arg1| arg1.place());
+                                    let write_value =
+                                        args.get(2).and_then(|arg1| arg1.node.place());
                                     if let Some(place) = write_value {
                                         influence_value.push(place);
                                     }
                                     let ordering_place =
-                                        args.get(3).and_then(|arg1| arg1.place()).unwrap();
+                                        args.get(3).and_then(|arg1| arg1.node.place()).unwrap();
                                     if let Some(ordering) = AtomicOrd::from_ordering(
                                         &body[callsite.block],
                                         &ordering_place,
@@ -286,17 +284,18 @@ impl<'a, 'tcx> AtomicCollector<'a, 'tcx> {
                                     }
                                     // ordering_type.push(AtomicOrd::from_ordering(&body[callsite.block], &ordering_place))
                                 } else {
-                                    atomic_arg = args.get(0).unwrap().place();
+                                    atomic_arg = args.get(0).unwrap().node.place();
 
                                     influence_value.push(*destination);
 
-                                    let write_value = args.get(1).and_then(|arg1| arg1.place());
+                                    let write_value =
+                                        args.get(1).and_then(|arg1| arg1.node.place());
                                     if let Some(place) = write_value {
                                         influence_value.push(place);
                                     }
 
                                     let ordering_place =
-                                        args.get(2).and_then(|arg1| arg1.place()).unwrap();
+                                        args.get(2).and_then(|arg1| arg1.node.place()).unwrap();
                                     if let Some(ordering) = AtomicOrd::from_ordering(
                                         &body[callsite.block],
                                         &ordering_place,
@@ -387,8 +386,8 @@ impl<'tcx> AtomPart<'tcx> {
                     return true;
                 }
             }
-            ty::TyKind::RawPtr(var_ty) => {
-                if let ty::TyKind::Adt(_, _) = var_ty.ty.kind() {
+            ty::TyKind::RawPtr(ty, _) => {
+                if let ty::TyKind::Adt(_, _) = ty.kind() {
                     return true;
                 }
             }
@@ -421,25 +420,27 @@ impl<'tcx> AtomPart<'tcx> {
                         pts_node
                     {
                         if !place_ref.projection.is_empty() && Self::from_adt(body, place_ref) {
-                            let key = place_ref.projection[0].clone();
+                            let key = &place_ref.projection[0];
                             let atomic_clone = atomic.clone();
                             let interival_clone = interival.clone();
 
                             parts_map
-                                .entry(format!("{:?}", key))
-                                .or_insert_with(Vec::new)
+                                .entry(format!("{key:?}"))
+                                .or_default()
                                 .push((atomic_clone, interival_clone));
                             break;
                         }
                     }
                     if let ConstraintNode::ConstantDeref(const_ref) = pts_node {
-                        if let Some(alloc) = const_ref.try_to_value(self.tcx) {
-                            let key = format!("{:?}", alloc);
+                        let typing_env = TypingEnv::fully_monomorphized()
+                            .with_post_analysis_normalized(self.tcx);
+                        if let Ok(alloc) = const_ref.eval(self.tcx, typing_env, body.span) {
+                            let key = format!("{alloc:?}");
                             let atomic_clone = atomic.clone();
                             let interival_clone = interival.clone();
                             parts_map
                                 .entry(key)
-                                .or_insert_with(Vec::new)
+                                .or_default()
                                 .push((atomic_clone, interival_clone));
                             break;
                         }

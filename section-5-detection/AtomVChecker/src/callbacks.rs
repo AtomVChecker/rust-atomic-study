@@ -12,7 +12,8 @@ use rustc_driver::Compilation;
 use rustc_hir::def_id::LOCAL_CRATE;
 use rustc_interface::interface;
 use rustc_middle::mir::mono::MonoItem;
-use rustc_middle::ty::{Instance, ParamEnv, TyCtxt};
+use rustc_middle::ty::{Instance, TyCtxt};
+use rustc_span::FileNameDisplayPreference;
 
 use crate::detector::atomic::AtomicityViolationDetector;
 use crate::detector::report::Report;
@@ -37,7 +38,11 @@ impl ATOMVCHECKERCallbacks {
 
 impl rustc_driver::Callbacks for ATOMVCHECKERCallbacks {
     fn config(&mut self, config: &mut rustc_interface::interface::Config) {
-        self.file_name = config.input.source_name().prefer_remapped().to_string();
+        self.file_name = config
+            .input
+            .source_name()
+            .display(FileNameDisplayPreference::Remapped)
+            .to_string();
         if config.opts.test {
             // self.options.test_only = true;
         }
@@ -52,9 +57,8 @@ impl rustc_driver::Callbacks for ATOMVCHECKERCallbacks {
     fn after_analysis<'tcx>(
         &mut self,
         compiler: &rustc_interface::interface::Compiler,
-        queries: &'tcx rustc_interface::Queries<'tcx>,
+        tcx: TyCtxt<'tcx>,
     ) -> rustc_driver::Compilation {
-        compiler.session().abort_if_errors();
         if self
             .output_directory
             .to_str()
@@ -64,10 +68,7 @@ impl rustc_driver::Callbacks for ATOMVCHECKERCallbacks {
             // No need to analyze a build script, but do generate code.
             return Compilation::Continue;
         }
-        queries
-            .global_ctxt()
-            .unwrap()
-            .enter(|tcx| self.analyze_with_atomvchecker(compiler, tcx));
+        self.analyze_with_atomvchecker(compiler, tcx);
         if self.test_run {
             // We avoid code gen for test cases because LLVM is not used in a thread safe manner.
             Compilation::Stop
@@ -96,7 +97,7 @@ impl ATOMVCHECKERCallbacks {
         if tcx.sess.opts.unstable_opts.no_codegen || !tcx.sess.opts.output_types.should_codegen() {
             return;
         }
-        let cgus = tcx.collect_and_partition_mono_items(()).1;
+        let cgus = tcx.collect_and_partition_mono_items(()).codegen_units;
         let instances: Vec<Instance<'tcx>> = cgus
             .iter()
             .flat_map(|cgu| {
@@ -110,8 +111,7 @@ impl ATOMVCHECKERCallbacks {
             })
             .collect();
         let mut callgraph = CallGraph::new();
-        let param_env = ParamEnv::reveal_all();
-        callgraph.analyze(instances.clone(), tcx, param_env);
+        callgraph.analyze(instances.clone(), tcx);
         match self.options.detector_kind {
             DetectorKind::AtomicityViolation => {
                 debug!("Detecting atomicity violation");
