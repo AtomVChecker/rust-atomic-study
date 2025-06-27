@@ -11,7 +11,7 @@ pub fn is_arc_or_rc_clone<'tcx>(def_id: DefId, substs: SubstsRef<'tcx>, tcx: TyC
     if fn_name != "std::clone::Clone::clone" {
         return false;
     }
-    
+
     if let &[arg] = substs.as_ref() {
         let arg_ty_name = format!("{:?}", arg);
         if is_arc(&arg_ty_name) || is_rc(&arg_ty_name) {
@@ -41,14 +41,13 @@ pub fn is_atomic_operate(def_id: DefId, tcx: TyCtxt<'_>) -> bool {
     let re = Regex::new(r"^(std|core)::sync::atomic::((Atomic[A-Za-z]+(::<.*?>)?)(::)?(load|store|swap|compare_exchange(_weak)?|fetch_(add|sub|or|update|max|xor)|compare_and_swap))").unwrap(); //|atomic_
     let func_name = tcx.def_path_str(def_id);
     re.is_match(&func_name)
-    
 }
 
 #[inline]
 pub fn is_ptr_operate(def_id: DefId, tcx: TyCtxt<'_>) -> bool {
     let func = tcx.def_path_str(def_id);
     let re = Regex::new(r"^std::ptr::mut_ptr::<.*>::(add|offset)").unwrap();
-    re.is_match(&func) || tcx.def_path_str(def_id).starts_with("std::ptr::read::<") 
+    re.is_match(&func) || tcx.def_path_str(def_id).starts_with("std::ptr::read::<")
 }
 
 #[inline]

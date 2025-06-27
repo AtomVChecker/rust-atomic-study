@@ -7,7 +7,7 @@ use rustc_data_structures::graph::{
     ControlFlowGraph, DirectedGraph, WithNumNodes, WithPredecessors, WithSuccessors,
 };
 use rustc_index::vec::{Idx, IndexVec};
-use rustc_middle::mir::{BasicBlock,BasicBlocks, Location, TerminatorKind};
+use rustc_middle::mir::{BasicBlock, BasicBlocks, Location, TerminatorKind};
 use std::borrow::BorrowMut;
 
 #[cfg(test)]
@@ -25,8 +25,6 @@ pub fn post_dominates(
     }
 }
 
-
-
 pub trait WithEndNodes: DirectedGraph {
     fn end_nodes(&self) -> Vec<Self::Node>;
 }
@@ -36,7 +34,6 @@ impl<'graph, G: WithEndNodes> WithEndNodes for &'graph G {
         (**self).end_nodes()
     }
 }
-
 
 impl<'tcx> WithEndNodes for BasicBlocks<'tcx> {
     #[inline]
@@ -151,7 +148,7 @@ fn post_dominators_given_rpo<G: ControlFlowGraph + BorrowMut<G> + WithEndNodes>(
     let mut changed = true;
     while changed {
         changed = false;
-        for &node in rpo { 
+        for &node in rpo {
             if end_nodes.contains(&node) {
                 continue;
             }
@@ -167,9 +164,7 @@ fn post_dominators_given_rpo<G: ControlFlowGraph + BorrowMut<G> + WithEndNodes>(
                                 new_ipdom,
                                 succ,
                             ),
-                            ExtNode::Real(None) => {
-                                ExtNode::Real(Some(succ))
-                            },
+                            ExtNode::Real(None) => ExtNode::Real(Some(succ)),
                             ExtNode::Fake => ExtNode::Fake,
                         };
                     }
@@ -180,9 +175,8 @@ fn post_dominators_given_rpo<G: ControlFlowGraph + BorrowMut<G> + WithEndNodes>(
                         new_ipdom = ExtNode::Fake;
                     }
                 }
-                
             }
-            
+
             if new_ipdom != immediate_post_dominators[node] {
                 immediate_post_dominators[node] = new_ipdom;
                 changed = true;
@@ -193,9 +187,7 @@ fn post_dominators_given_rpo<G: ControlFlowGraph + BorrowMut<G> + WithEndNodes>(
         post_order_rank,
         immediate_post_dominators,
     }
-    
 }
-
 
 // 两个分支交汇点
 fn intersect<Node: Idx>(

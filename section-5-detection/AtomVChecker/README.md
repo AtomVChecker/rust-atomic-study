@@ -33,7 +33,7 @@ It will print one atomic concurrency bug(ARC bug) in json format, like the follo
     [
       {
         "AtomicCorrelationViolation": {
-          "bug_kind": "AtimicCorrelationViolation",
+          "bug_kind": "AtomicCorrelationViolation",
           "possibility": "Possibly",
           "diagnosis": {
             "atomic": "src/main.rs:381:33: 381:56"
@@ -53,7 +53,7 @@ It will print one atomic concurrency bug(CIU bug):
 ```
       {
         "AtomicCorrelationViolation": {
-          "bug_kind": "AtimicCorrelationViolation",
+          "bug_kind": "AtomicCorrelationViolation",
           "possibility": "Possibly",
           "diagnosis": {
             "atomic": "src/main.rs:298:41: 298:54"
@@ -63,7 +63,7 @@ It will print one atomic concurrency bug(CIU bug):
       },
       {
         "AtomicCorrelationViolation": {
-          "bug_kind": "AtimicCorrelationViolation",
+          "bug_kind": "AtomicCorrelationViolation",
           "possibility": "Possibly",
           "diagnosis": {
             "atomic": "src/main.rs:177:45: 177:65"

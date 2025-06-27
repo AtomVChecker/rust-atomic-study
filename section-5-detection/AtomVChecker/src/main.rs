@@ -14,7 +14,6 @@ mod detector;
 mod interest;
 mod options;
 
-
 use options::Options;
 use rustc_session::config::ErrorOutputType;
 use rustc_session::early_error;

@@ -10,24 +10,24 @@ extern crate rustc_hash;
 extern crate rustc_hir;
 extern crate rustc_index;
 
-use std::collections::{VecDeque, HashSet};
+use std::collections::{HashSet, VecDeque};
 
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use rustc_hir::def_id::DefId;
 use rustc_middle::mir::visit::Visitor;
 use rustc_middle::mir::{
-    Body, Constant, ConstantKind, Local, Location, Operand, Place, PlaceRef,
-    ProjectionElem, Rvalue, Statement, StatementKind, Terminator, TerminatorKind,
+    Body, Constant, ConstantKind, Local, Location, Operand, Place, PlaceRef, ProjectionElem,
+    Rvalue, Statement, StatementKind, Terminator, TerminatorKind,
 };
 use rustc_middle::ty::{TyCtxt, TyKind};
 
+use crate::analysis::callgraph::InstanceId;
+use crate::interest::memory::ownership;
 use petgraph::dot::{Config, Dot};
 use petgraph::graph::NodeIndex;
 use petgraph::visit::EdgeRef;
 use petgraph::{Directed, Direction, Graph};
-use crate::analysis::callgraph::InstanceId;
-use crate::interest::memory::ownership;
 
 /// Field-sensitive intra-procedural Andersen pointer analysis.
 /// <https://helloworld.pub/program-analysis-andersen-pointer-analysis-algorithm-based-on-svf.html>
@@ -83,7 +83,7 @@ impl<'a, 'tcx> Andersen<'a, 'tcx> {
         for (source, target, weight) in graph.edges() {
             if weight == ConstraintEdge::Address {
                 self.pts.entry(target).or_default().insert(source);
-                
+
                 worklist.push_back(target);
             }
         }
@@ -118,7 +118,6 @@ impl<'a, 'tcx> Andersen<'a, 'tcx> {
                     worklist.push_back(target);
                 }
             }
-
         }
     }
 
@@ -129,17 +128,16 @@ impl<'a, 'tcx> Andersen<'a, 'tcx> {
             return false;
         }
         if self.pts.get(target).is_none() {
-            let source_pts = self.pts.get(source).unwrap().clone();      
+            let source_pts = self.pts.get(source).unwrap().clone();
             self.pts.insert(*target, source_pts);
             return true;
         } else {
             let old_len = self.pts.get(target).unwrap().len();
-            let source_pts = self.pts.get(source).unwrap().clone();      
+            let source_pts = self.pts.get(source).unwrap().clone();
             let target_pts = self.pts.get_mut(target).unwrap();
             target_pts.extend(source_pts.into_iter());
             old_len != target_pts.len()
         }
-        
     }
 
     pub fn finish(self) -> FxHashMap<ConstraintNode<'tcx>, FxHashSet<ConstraintNode<'tcx>>> {
@@ -173,11 +171,11 @@ pub enum ConstraintNode<'tcx> {
 impl<'tcx> ConstraintNode<'tcx> {
     // pub fn place(&self) -> Option<&PlaceRef<'tcx>> {
     //     match self {
-    //         ConstraintNode::Alloc(place) 
-    //         | ConstraintNode::Place(place) 
-    //         | ConstraintNode::Construct(place) 
-    //         | ConstraintNode::FunctionRet(place) 
-    //         | ConstraintNode::ParameterInto(place) 
+    //         ConstraintNode::Alloc(place)
+    //         | ConstraintNode::Place(place)
+    //         | ConstraintNode::Construct(place)
+    //         | ConstraintNode::FunctionRet(place)
+    //         | ConstraintNode::ParameterInto(place)
     //         | ConstraintNode::SmartPointer(place) => Some(place),
 
     //         ConstraintNode::Constant(_)
@@ -276,7 +274,7 @@ impl<'tcx> ConstraintGraph<'tcx> {
         let rhs = self.get_or_insert_node(rhs);
 
         self.graph.add_edge(rhs, lhs, ConstraintEdge::Copy);
-    }  
+    }
 
     fn add_func_ret(&mut self, lhs: PlaceRef<'tcx>, rhs: PlaceRef<'tcx>) {
         let lhs = ConstraintNode::Place(lhs);
@@ -411,17 +409,18 @@ impl<'tcx> ConstraintGraph<'tcx> {
         for edge in self.graph.edges_directed(rhs, Direction::Outgoing) {
             if *edge.weight() == ConstraintEdge::Copy {
                 let target = self.graph.node_weight(edge.target()).copied().unwrap();
-                match target{
+                match target {
                     ConstraintNode::Alloc(_) => {
                         let rhs_target = self.get_node(&target).unwrap();
                         for edge1 in self.graph.edges_directed(rhs_target, Direction::Outgoing) {
                             if *edge1.weight() == ConstraintEdge::Address {
-                                let target1 = self.graph.node_weight(edge1.target()).copied().unwrap();
+                                let target1 =
+                                    self.graph.node_weight(edge1.target()).copied().unwrap();
                                 targets.push(target1);
                                 break;
                             }
                         }
-                    },
+                    }
                     _ => {
                         targets.push(target);
                     }
@@ -513,9 +512,9 @@ impl<'a, 'tcx> ConstraintGraphCollector<'a, 'tcx> {
     fn process_assignment(&mut self, place: &Place<'tcx>, rvalue: &Rvalue<'tcx>) {
         let lhs_pattern = Self::process_place(place.as_ref());
         let rhs_pattern = Self::process_rvalue(rvalue);
-        
+
         match (lhs_pattern, rhs_pattern) {
-            // a = &b 
+            // a = &b
             (AccessPattern::Direct(lhs), Some(AccessPattern::Ref(rhs))) => {
                 // a = &*b <==> a = b && b = *b
                 match rhs.clone() {
@@ -524,21 +523,20 @@ impl<'a, 'tcx> ConstraintGraphCollector<'a, 'tcx> {
                         projection: [ProjectionElem::Deref, ref remain @ ..],
                     } => {
                         let deref = PlaceRef {
-                                local: l,
-                                projection: &[ProjectionElem::Deref],
-                            };
+                            local: l,
+                            projection: &[ProjectionElem::Deref],
+                        };
                         let place = PlaceRef {
-                                local: l,
-                                projection: remain,
-                            };
+                            local: l,
+                            projection: remain,
+                        };
                         self.graph.add_load(place, deref);
                         self.graph.add_copy(lhs, place);
-                    },
+                    }
                     _ => {
                         self.graph.add_address(lhs, rhs);
-                    },
+                    }
                 }
-                
             }
             // a = b
             (AccessPattern::Direct(lhs), Some(AccessPattern::Direct(rhs))) => {
@@ -572,7 +570,7 @@ impl<'a, 'tcx> ConstraintGraphCollector<'a, 'tcx> {
         }
     }
 
-    fn process_place(place_ref: PlaceRef<'tcx>) -> AccessPattern<'tcx> { 
+    fn process_place(place_ref: PlaceRef<'tcx>) -> AccessPattern<'tcx> {
         match place_ref {
             PlaceRef {
                 local: l,
@@ -595,20 +593,17 @@ impl<'a, 'tcx> ConstraintGraphCollector<'a, 'tcx> {
                         } else {
                             Some(AccessPattern::Direct(place.as_ref()))
                         }
-                        
                     }
                     Operand::Constant(box Constant {
                         span: _,
                         user_ty: _,
                         literal,
-                    }) => {
-                        Some(AccessPattern::Constant(*literal))
-                    },
+                    }) => Some(AccessPattern::Constant(*literal)),
                 }
-            },
-            Rvalue::Ref(_, _, place) | Rvalue::AddressOf(_, place) |  Rvalue::CopyForDeref(place) => {
-                Some(AccessPattern::Ref(place.as_ref()))
             }
+            Rvalue::Ref(_, _, place)
+            | Rvalue::AddressOf(_, place)
+            | Rvalue::CopyForDeref(place) => Some(AccessPattern::Ref(place.as_ref())),
             Rvalue::Aggregate(_, operand) => {
                 if operand.len() != 0 {
                     match operand[0] {
@@ -620,7 +615,7 @@ impl<'a, 'tcx> ConstraintGraphCollector<'a, 'tcx> {
                 } else {
                     None
                 }
-            }, 
+            }
             _ => None,
         }
     }
@@ -639,7 +634,7 @@ impl<'a, 'tcx> ConstraintGraphCollector<'a, 'tcx> {
         self.graph.add_parameter_into(arg, dest);
     }
 
-    /// Box, Arc, and Rc transform raw pointers into their respective smart pointer types. Given that these smart pointers 
+    /// Box, Arc, and Rc transform raw pointers into their respective smart pointer types. Given that these smart pointers
     /// inherently implement the Deref trait, it logically follows that they enable the dereferencing of pointers.
     fn process_smart_pointer(&mut self, arg: PlaceRef<'tcx>, dest: PlaceRef<'tcx>) {
         self.graph.add_smart_pointer(arg, dest);
@@ -686,12 +681,11 @@ impl<'a, 'tcx> ConstraintGraphCollector<'a, 'tcx> {
 
 impl<'a, 'tcx> Visitor<'tcx> for ConstraintGraphCollector<'a, 'tcx> {
     fn visit_statement(&mut self, statement: &Statement<'tcx>, _location: Location) {
-
-        match &statement.kind{
+        match &statement.kind {
             StatementKind::Assign(box (place, rvalue)) => {
                 self.process_assignment(place, rvalue);
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 
@@ -709,14 +703,17 @@ impl<'a, 'tcx> Visitor<'tcx> for ConstraintGraphCollector<'a, 'tcx> {
             destination,
             ..
         } = &terminator.kind
-        {   
+        {
             let func_ty = func.ty(self.body, self.tcx);
-            if let (&[Operand::Move(arg)] | &[Operand::Copy(arg)], dest) = (args.as_slice(), destination) {
+            if let (&[Operand::Move(arg)] | &[Operand::Copy(arg)], dest) =
+                (args.as_slice(), destination)
+            {
                 match func_ty.kind() {
                     TyKind::FnDef(def_id, substs)
                         if ownership::is_arc_or_rc_clone(*def_id, *substs, self.tcx)
-                            || ownership::is_ptr_operate(*def_id, self.tcx) 
-                            || ownership::is_addr(*def_id, self.tcx) => {
+                            || ownership::is_ptr_operate(*def_id, self.tcx)
+                            || ownership::is_addr(*def_id, self.tcx) =>
+                    {
                         return self.process_alias_copy(arg.as_ref(), dest.as_ref());
                     }
                     _ => {}
@@ -728,20 +725,21 @@ impl<'a, 'tcx> Visitor<'tcx> for ConstraintGraphCollector<'a, 'tcx> {
             // Handle atomic and is_map_addr operations separately, and mark other functions as complex function calls
             match func_ty.kind() {
                 TyKind::FnDef(def_id, substs) => {
-                    if ownership::is_get_unchecked(*def_id, self.tcx) 
-                    || ownership::is_atomic_operate(*def_id, self.tcx) 
-                    || ownership::is_addr(*def_id, self.tcx) 
-                    || ownership::is_ptr_operate(*def_id, self.tcx) {
-                        
+                    if ownership::is_get_unchecked(*def_id, self.tcx)
+                        || ownership::is_atomic_operate(*def_id, self.tcx)
+                        || ownership::is_addr(*def_id, self.tcx)
+                        || ownership::is_ptr_operate(*def_id, self.tcx)
+                    {
                         let arg = args.get(0).unwrap().place().unwrap();
                         self.process_call_arg_dest(arg.as_ref(), destination.as_ref());
-                    } else if ownership::is_smart_pointers(*def_id, self.tcx)  {
+                    } else if ownership::is_smart_pointers(*def_id, self.tcx) {
                         if let Operand::Move(place) | Operand::Copy(place) = args[0] {
                             self.process_smart_pointer(place.as_ref(), destination.as_ref());
                         }
-                    } else if !ownership::is_arc_or_rc_clone(*def_id, *substs, self.tcx) 
-                        && !ownership::is_null(*def_id, self.tcx) 
-                        && args.len() > 0 {  
+                    } else if !ownership::is_arc_or_rc_clone(*def_id, *substs, self.tcx)
+                        && !ownership::is_null(*def_id, self.tcx)
+                        && args.len() > 0
+                    {
                         // Ignore function calls that don't have arguments
                         for arg in args {
                             if let Operand::Move(place) | Operand::Copy(place) = arg {
@@ -794,7 +792,6 @@ pub struct AliasId {
     pub local: Local,
 }
 
-
 /// Alias analysis based on points-to info.
 /// It answers if two memory cells alias with each other.
 /// It performs an underlying points-to analysis if needed.
@@ -812,13 +809,16 @@ impl<'tcx> AliasAnalysis<'tcx> {
         }
     }
 
-
-    pub fn load_corrlation(&mut self, body: &Body<'tcx>, load_interimval: &HashSet<PlaceRef<'tcx>>) -> bool {
+    pub fn load_corrlation(
+        &mut self,
+        body: &Body<'tcx>,
+        load_interimval: &HashSet<PlaceRef<'tcx>>,
+    ) -> bool {
         let mut collector = ConstraintGraphCollector::new(body, self.tcx);
         collector.visit_body(body);
         let graph = collector.finish();
         let edges = graph.graph.clone().into_nodes_edges().1;
-        
+
         for local in load_interimval {
             for edge in edges.clone() {
                 let source = graph.graph.node_weight(edge.source()).unwrap();
@@ -840,7 +840,7 @@ impl<'tcx> AliasAnalysis<'tcx> {
             self.pts.get(&def_id).unwrap().clone()
         } else {
             let mut pointer_analysis = Andersen::new(body, self.tcx);
-            
+
             pointer_analysis.analyze();
             let pts = pointer_analysis.finish();
             self.pts.entry(def_id).or_insert(pts.clone()).clone()
@@ -857,7 +857,7 @@ impl<'tcx> AliasAnalysis<'tcx> {
     //     for pointee in pts {
     //         match pointee {
     //             ConstraintNode::Alloc(place1) | ConstraintNode::Place(place1)
-    //                 if !place1.projection.is_empty() => 
+    //                 if !place1.projection.is_empty() =>
     //                 {
     //                     match body.local_decls[place1.local].ty.kind() {
     //                         ty::TyKind::Adt(_, _) => {
@@ -884,7 +884,6 @@ impl<'tcx> AliasAnalysis<'tcx> {
     //     return false;
     // }
 
-
     // pub fn get_fields_of_struct(
     //     &mut self,
     //     node: ConstraintNode<'tcx>,
@@ -898,19 +897,17 @@ impl<'tcx> AliasAnalysis<'tcx> {
     //             if place.projection.is_empty() {
     //                 continue;
     //             }
-                
+
     //             let ty = &body.local_decls[place.local].ty;
     //             if is_adt_or_contains_adt(ty) {
     //                 Self::collect_fields(place, points_to_map, &mut fields);
     //             }
     //         }
     //     }
-    
+
     //     Some(fields)
     // }
-    
-    
-    
+
     // fn collect_fields(
     //     place1: &PlaceRef<'tcx>,
     //     points_to_map: &PointsToMap<'tcx>,
@@ -930,13 +927,13 @@ impl<'tcx> AliasAnalysis<'tcx> {
     //     node: ConstraintNode<'tcx>,
     //     body: &'tcx Body<'tcx>,
     //     points_to_map: & PointsToMap<'tcx>,
-    // ) -> Option<FxHashSet<ConstraintNode<'tcx>>> { 
+    // ) -> Option<FxHashSet<ConstraintNode<'tcx>>> {
     //     let mut fields = FxHashSet::default();
     //     let pts = points_to_map.get(&node)?;
     //     for pointee in pts {
     //         match pointee {
     //             ConstraintNode::Alloc(place1) | ConstraintNode::Place(place1)
-    //                 if !place1.projection.is_empty() => 
+    //                 if !place1.projection.is_empty() =>
     //                 {
     //                     let node_parents = ConstraintNode::Place(Place::from(place1.local).as_ref());
     //                     match body.local_decls[place1.local].ty.kind() {
@@ -992,5 +989,4 @@ impl<'tcx> AliasAnalysis<'tcx> {
     //     // return Some((fields, struct_node));
     //     return Some(fields);
     // }
-
 }

@@ -15,18 +15,25 @@ extern crate rustc_middle;
 use rustc_middle::ty::{TyCtxt, TyKind};
 use std::collections::VecDeque;
 
-use rustc_data_structures::fx::FxHashSet;
-use rustc_index::vec::IndexVec;
-use rustc_middle::mir::visit::Visitor;
-use rustc_middle::mir::{Body, Local, Location, Place, Rvalue, TerminatorKind, Operand};
 use crate::analysis::callgraph::{CallGraph, InstanceId};
 use crate::interest::memory::ownership;
 use petgraph::Direction::Outgoing;
+use rustc_data_structures::fx::FxHashSet;
+use rustc_index::vec::IndexVec;
+use rustc_middle::mir::visit::Visitor;
+use rustc_middle::mir::{Body, Local, Location, Operand, Place, Rvalue, TerminatorKind};
 
-pub fn all_data_dep_on<'tcx>(a: Local, data_deps: &DataDeps, callgraph: &CallGraph, instance_id: InstanceId, body: &Body<'tcx>, tcx: TyCtxt<'tcx>,) -> FxHashSet<Local> {
+pub fn all_data_dep_on<'tcx>(
+    a: Local,
+    data_deps: &DataDeps,
+    callgraph: &CallGraph,
+    instance_id: InstanceId,
+    body: &Body<'tcx>,
+    tcx: TyCtxt<'tcx>,
+) -> FxHashSet<Local> {
     let mut worklist = VecDeque::from_iter(data_deps.immediate_dep(a).into_iter());
     let mut visited = FxHashSet::default();
-    
+
     while let Some(n) = worklist.pop_front() {
         if !visited.insert(n) {
             continue;
@@ -36,7 +43,10 @@ pub fn all_data_dep_on<'tcx>(a: Local, data_deps: &DataDeps, callgraph: &CallGra
         }
     }
     let mut callsites = Vec::new();
-    let call_targets: Vec<InstanceId> = callgraph.graph.neighbors_directed(instance_id, Outgoing).collect();
+    let call_targets: Vec<InstanceId> = callgraph
+        .graph
+        .neighbors_directed(instance_id, Outgoing)
+        .collect();
     for call_target in call_targets {
         let sites = callsite_locations(callgraph, instance_id, call_target).unwrap();
         for callsite in sites {
@@ -51,28 +61,30 @@ pub fn all_data_dep_on<'tcx>(a: Local, data_deps: &DataDeps, callgraph: &CallGra
             ..
         } = &body[location.block].terminator().kind
         {
-            if let (&[Operand::Move(arg) | Operand::Copy(arg)], dest) = (args.as_slice(), destination) {
+            if let (&[Operand::Move(arg) | Operand::Copy(arg)], dest) =
+                (args.as_slice(), destination)
+            {
                 if visited.contains(&arg.local) {
                     visited.insert(dest.local);
                 }
-            } 
+            }
             let func_ty = func.ty(body, tcx);
             match func_ty.kind() {
                 TyKind::FnDef(def_id, _) => {
-                    if ownership::is_get_unchecked(*def_id, tcx) 
-                        || ownership::is_atomic_operate(*def_id, tcx) 
-                        || ownership::is_addr(*def_id, tcx) 
-                        || ownership::is_ptr_operate(*def_id, tcx) {
-                            if let Operand::Move(arg) | Operand::Copy(arg) = args[0] {
-                                if visited.contains(&arg.local) {
-                                    visited.insert(destination.local);
-                                }
+                    if ownership::is_get_unchecked(*def_id, tcx)
+                        || ownership::is_atomic_operate(*def_id, tcx)
+                        || ownership::is_addr(*def_id, tcx)
+                        || ownership::is_ptr_operate(*def_id, tcx)
+                    {
+                        if let Operand::Move(arg) | Operand::Copy(arg) = args[0] {
+                            if visited.contains(&arg.local) {
+                                visited.insert(destination.local);
                             }
+                        }
                     }
                 }
                 _ => {}
             }
-
         }
     }
     visited.insert(a);
@@ -106,8 +118,9 @@ impl<'tcx> Visitor<'tcx> for DataDeps {
     fn visit_assign(&mut self, place: &Place<'tcx>, rvalue: &Rvalue<'tcx>, location: Location) {
         let lhs = place.local;
         match rvalue {
-            Rvalue::Use(operand)  => { // | Rvalue::Cast(_, operand, _) | Rvalue::UnaryOp(_, operand)
-                if let Some(rhs) = operand.place() { 
+            Rvalue::Use(operand) => {
+                // | Rvalue::Cast(_, operand, _) | Rvalue::UnaryOp(_, operand)
+                if let Some(rhs) = operand.place() {
                     self.immediate_deps[rhs.local][lhs] = true;
                 }
             }
@@ -121,7 +134,7 @@ impl<'tcx> Visitor<'tcx> for DataDeps {
                     self.immediate_deps[rhs.local][lhs] = true;
                 }
             }
-            Rvalue::BinaryOp(_, box (rhs0, rhs1))  => { 
+            Rvalue::BinaryOp(_, box (rhs0, rhs1)) => {
                 if let Some(rhs0) = rhs0.place() {
                     self.immediate_deps[rhs0.local][lhs] = true;
                 }
@@ -140,10 +153,8 @@ impl<'tcx> Visitor<'tcx> for DataDeps {
             _ => {}
         }
         self.super_assign(place, rvalue, location);
-        
     }
 }
-
 
 pub fn callsite_locations(
     callgraph: &CallGraph<'_>,
