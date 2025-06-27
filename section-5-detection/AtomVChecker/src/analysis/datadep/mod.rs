@@ -19,7 +19,7 @@ use crate::analysis::callgraph::{CallGraph, InstanceId};
 use crate::interest::memory::ownership;
 use petgraph::Direction::Outgoing;
 use rustc_data_structures::fx::FxHashSet;
-use rustc_index::vec::IndexVec;
+use rustc_index::IndexVec;
 use rustc_middle::mir::visit::Visitor;
 use rustc_middle::mir::{Body, Local, Location, Operand, Place, Rvalue, TerminatorKind};
 
@@ -57,13 +57,11 @@ pub fn all_data_dep_on<'tcx>(
         if let TerminatorKind::Call {
             func,
             args,
-            destination,
+            destination: dest,
             ..
         } = &body[location.block].terminator().kind
         {
-            if let (&[Operand::Move(arg) | Operand::Copy(arg)], dest) =
-                (args.as_slice(), destination)
-            {
+            if let Some(Operand::Move(arg) | Operand::Copy(arg)) = args.first().map(|a| &a.node) {
                 if visited.contains(&arg.local) {
                     visited.insert(dest.local);
                 }
@@ -76,9 +74,9 @@ pub fn all_data_dep_on<'tcx>(
                         || ownership::is_addr(*def_id, tcx)
                         || ownership::is_ptr_operate(*def_id, tcx)
                     {
-                        if let Operand::Move(arg) | Operand::Copy(arg) = args[0] {
+                        if let Operand::Move(arg) | Operand::Copy(arg) = &args[0].node {
                             if visited.contains(&arg.local) {
-                                visited.insert(destination.local);
+                                visited.insert(dest.local);
                             }
                         }
                     }
@@ -135,14 +133,6 @@ impl<'tcx> Visitor<'tcx> for DataDeps {
                 }
             }
             Rvalue::BinaryOp(_, box (rhs0, rhs1)) => {
-                if let Some(rhs0) = rhs0.place() {
-                    self.immediate_deps[rhs0.local][lhs] = true;
-                }
-                if let Some(rhs1) = rhs1.place() {
-                    self.immediate_deps[rhs1.local][lhs] = true;
-                }
-            }
-            Rvalue::CheckedBinaryOp(_, box (rhs0, rhs1)) => {
                 if let Some(rhs0) = rhs0.place() {
                     self.immediate_deps[rhs0.local][lhs] = true;
                 }

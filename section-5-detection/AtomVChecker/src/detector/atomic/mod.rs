@@ -20,7 +20,7 @@ extern crate rustc_middle;
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 
-use log::{debug, warn};
+use log::debug;
 use regex::Regex;
 use rustc_middle::mir::{Body, Local, Location, Place, PlaceRef, ProjectionElem};
 use rustc_middle::ty::TyCtxt;
@@ -448,9 +448,7 @@ impl<'tcx> AtomicityViolationDetector<'tcx> {
                 CallGraphNode::WithBody(instance) => instance,
                 CallGraphNode::WithoutBody(instance) => instance,
             };
-            let func_name = self
-                .tcx
-                .def_path_str_with_substs(inst.def_id(), inst.substs);
+            let func_name = self.tcx.def_path_str(inst.def_id());
             let re = Regex::new(r"^(std|core)::sync::atomic::((AtomicPtr)(::<(.*?)>)?|(Atomic[A-Za-z]+)(::<(.*?)>)?)(::)?(load|store|swap|compare_exchange(_weak)?|fetch_(and|add|sub|or|update|max|xor)|compare_and_swap)").unwrap();
 
             // Identify atomic operations and distinguish between AtomicPtr and non-AtomicPtr

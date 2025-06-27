@@ -3,10 +3,13 @@
 #![feature(rustc_private)]
 #![feature(box_patterns)]
 
+extern crate rustc_abi;
 extern crate rustc_driver;
 extern crate rustc_interface;
 extern crate rustc_middle;
 extern crate rustc_session;
+extern crate rustc_span;
+extern crate rustc_type_ir;
 
 mod analysis;
 mod callbacks;
@@ -16,12 +19,14 @@ mod options;
 
 use options::Options;
 use rustc_session::config::ErrorOutputType;
-use rustc_session::early_error;
+use rustc_session::EarlyDiagCtxt;
 
 fn main() {
+    let diag_ctxt = EarlyDiagCtxt::new(ErrorOutputType::default());
+
     // Initialize loggers.
     if std::env::var("RUSTC_LOG").is_ok() {
-        rustc_driver::init_rustc_env_logger();
+        rustc_driver::init_rustc_env_logger(&diag_ctxt);
     }
     if std::env::var("ATOMVCHECKER_LOG").is_ok() {
         let e = env_logger::Env::new()
@@ -36,10 +41,7 @@ fn main() {
         .enumerate()
         .map(|(i, arg)| {
             arg.into_string().unwrap_or_else(|arg| {
-                early_error(
-                    ErrorOutputType::default(),
-                    &format!("Argument {} is not valid Unicode: {:?}", i, arg),
-                )
+                diag_ctxt.early_fatal(format!("Argument {} is not valid Unicode: {:?}", i, arg))
             })
         })
         .collect::<Vec<_>>();
@@ -52,7 +54,7 @@ fn main() {
     }
 
     let mut rustc_command_line_arguments: Vec<String> = args[1..].into();
-    rustc_driver::install_ice_hook();
+    rustc_driver::install_ice_hook("ATOMVCHECKER", |_| ());
     let result = rustc_driver::catch_fatal_errors(|| {
         // Add back the binary name
         rustc_command_line_arguments.insert(0, args[0].clone());
@@ -90,11 +92,8 @@ fn main() {
         }
 
         let mut callbacks = callbacks::ATOMVCHECKERCallbacks::new(options);
-        let compiler =
-            rustc_driver::RunCompiler::new(&rustc_command_line_arguments, &mut callbacks);
-        compiler.run()
-    })
-    .and_then(|result| result);
+        rustc_driver::run_compiler(&rustc_command_line_arguments, &mut callbacks);
+    });
     let exit_code = match result {
         Ok(_) => rustc_driver::EXIT_SUCCESS,
         Err(_) => rustc_driver::EXIT_FAILURE,
@@ -107,7 +106,7 @@ fn find_sysroot() -> String {
     let toolchain = option_env!("RUSTUP_TOOLCHAIN");
     match (home, toolchain) {
         (Some(home), Some(toolchain)) => format!("{}/toolchains/{}", home, toolchain),
-        _ => option_env!("RUST_SYSROOT")
+        _ => std::env::var("RUST_SYSROOT")
             .expect(
                 "Could not find sysroot. Specify the RUST_SYSROOT environment variable, \
                  or use rustup to set the compiler to use for ATOMVCHECKER",

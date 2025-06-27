@@ -12,13 +12,14 @@ extern crate rustc_index;
 
 use std::collections::{HashSet, VecDeque};
 
+use rustc_abi::FieldIdx;
 use rustc_hash::{FxHashMap, FxHashSet};
 
 use rustc_hir::def_id::DefId;
 use rustc_middle::mir::visit::Visitor;
 use rustc_middle::mir::{
-    Body, Constant, ConstantKind, Local, Location, Operand, Place, PlaceRef, ProjectionElem,
-    Rvalue, Statement, StatementKind, Terminator, TerminatorKind,
+    Body, Const, ConstOperand, Local, Location, Operand, Place, PlaceRef, ProjectionElem, Rvalue,
+    Statement, StatementKind, Terminator, TerminatorKind,
 };
 use rustc_middle::ty::{TyCtxt, TyKind};
 
@@ -160,8 +161,8 @@ impl<'a, 'tcx> Andersen<'a, 'tcx> {
 pub enum ConstraintNode<'tcx> {
     Alloc(PlaceRef<'tcx>),
     Place(PlaceRef<'tcx>),
-    Constant(ConstantKind<'tcx>),
-    ConstantDeref(ConstantKind<'tcx>),
+    Constant(Const<'tcx>),
+    ConstantDeref(Const<'tcx>),
     Construct(PlaceRef<'tcx>),
     FunctionRet(PlaceRef<'tcx>),
     ParameterInto(PlaceRef<'tcx>),
@@ -215,7 +216,7 @@ enum AccessPattern<'tcx> {
     Ref(PlaceRef<'tcx>),
     Indirect(PlaceRef<'tcx>),
     Direct(PlaceRef<'tcx>),
-    Constant(ConstantKind<'tcx>),
+    Constant(Const<'tcx>),
     Initialize(PlaceRef<'tcx>), // imp::Waiter { thread: move _7, signaled: move _10, next: move _11 } 默认第一个参数和lvalue成为这种关系
 }
 
@@ -248,7 +249,7 @@ impl<'tcx> ConstraintGraph<'tcx> {
         self.graph.add_edge(rhs, lhs, ConstraintEdge::Address);
     }
 
-    fn add_constant(&mut self, constant: ConstantKind<'tcx>) {
+    fn add_constant(&mut self, constant: Const<'tcx>) {
         let lhs = ConstraintNode::Constant(constant);
         let rhs = ConstraintNode::ConstantDeref(constant);
         let lhs = self.get_or_insert_node(lhs);
@@ -309,7 +310,7 @@ impl<'tcx> ConstraintGraph<'tcx> {
         self.graph.add_edge(rhs, lhs, ConstraintEdge::Address);
     }
 
-    fn add_copy_constant(&mut self, lhs: PlaceRef<'tcx>, rhs: ConstantKind<'tcx>) {
+    fn add_copy_constant(&mut self, lhs: PlaceRef<'tcx>, rhs: Const<'tcx>) {
         let lhs = ConstraintNode::Place(lhs);
         let rhs = ConstraintNode::Constant(rhs);
         let lhs = self.get_or_insert_node(lhs);
@@ -342,7 +343,7 @@ impl<'tcx> ConstraintGraph<'tcx> {
         self.graph.add_edge(rhs, lhs, ConstraintEdge::Address);
     }
 
-    fn add_store_constant(&mut self, lhs: PlaceRef<'tcx>, rhs: ConstantKind<'tcx>) {
+    fn add_store_constant(&mut self, lhs: PlaceRef<'tcx>, rhs: Const<'tcx>) {
         let lhs = ConstraintNode::Place(lhs);
         let rhs = ConstraintNode::Constant(rhs);
         let lhs = self.get_or_insert_node(lhs);
@@ -594,19 +595,19 @@ impl<'a, 'tcx> ConstraintGraphCollector<'a, 'tcx> {
                             Some(AccessPattern::Direct(place.as_ref()))
                         }
                     }
-                    Operand::Constant(box Constant {
+                    Operand::Constant(box ConstOperand {
                         span: _,
                         user_ty: _,
-                        literal,
-                    }) => Some(AccessPattern::Constant(*literal)),
+                        const_,
+                    }) => Some(AccessPattern::Constant(*const_)),
                 }
             }
-            Rvalue::Ref(_, _, place)
-            | Rvalue::AddressOf(_, place)
-            | Rvalue::CopyForDeref(place) => Some(AccessPattern::Ref(place.as_ref())),
+            Rvalue::Ref(_, _, place) | Rvalue::RawPtr(_, place) | Rvalue::CopyForDeref(place) => {
+                Some(AccessPattern::Ref(place.as_ref()))
+            }
             Rvalue::Aggregate(_, operand) => {
                 if operand.len() != 0 {
-                    match operand[0] {
+                    match operand[FieldIdx::from_usize(0)] {
                         Operand::Move(place) | Operand::Copy(place) => {
                             Some(AccessPattern::Initialize(place.as_ref()))
                         }
@@ -700,17 +701,15 @@ impl<'a, 'tcx> Visitor<'tcx> for ConstraintGraphCollector<'a, 'tcx> {
         if let TerminatorKind::Call {
             func,
             args,
-            destination,
+            destination: dest,
             ..
         } = &terminator.kind
         {
             let func_ty = func.ty(self.body, self.tcx);
-            if let (&[Operand::Move(arg)] | &[Operand::Copy(arg)], dest) =
-                (args.as_slice(), destination)
-            {
+            if let Some(Operand::Move(arg) | Operand::Copy(arg)) = args.first().map(|a| &a.node) {
                 match func_ty.kind() {
                     TyKind::FnDef(def_id, substs)
-                        if ownership::is_arc_or_rc_clone(*def_id, *substs, self.tcx)
+                        if ownership::is_arc_or_rc_clone(*def_id, substs.as_slice(), self.tcx)
                             || ownership::is_ptr_operate(*def_id, self.tcx)
                             || ownership::is_addr(*def_id, self.tcx) =>
                     {
@@ -730,11 +729,11 @@ impl<'a, 'tcx> Visitor<'tcx> for ConstraintGraphCollector<'a, 'tcx> {
                         || ownership::is_addr(*def_id, self.tcx)
                         || ownership::is_ptr_operate(*def_id, self.tcx)
                     {
-                        let arg = args.get(0).unwrap().place().unwrap();
-                        self.process_call_arg_dest(arg.as_ref(), destination.as_ref());
+                        let arg = args.get(0).unwrap().node.place().unwrap();
+                        self.process_call_arg_dest(arg.as_ref(), dest.as_ref());
                     } else if ownership::is_smart_pointers(*def_id, self.tcx) {
-                        if let Operand::Move(place) | Operand::Copy(place) = args[0] {
-                            self.process_smart_pointer(place.as_ref(), destination.as_ref());
+                        if let Operand::Move(place) | Operand::Copy(place) = &args[0].node {
+                            self.process_smart_pointer(place.as_ref(), dest.as_ref());
                         }
                     } else if !ownership::is_arc_or_rc_clone(*def_id, *substs, self.tcx)
                         && !ownership::is_null(*def_id, self.tcx)
@@ -742,8 +741,8 @@ impl<'a, 'tcx> Visitor<'tcx> for ConstraintGraphCollector<'a, 'tcx> {
                     {
                         // Ignore function calls that don't have arguments
                         for arg in args {
-                            if let Operand::Move(place) | Operand::Copy(place) = arg {
-                                self.process_complix_func_ret(place.as_ref(), destination.as_ref());
+                            if let Operand::Move(place) | Operand::Copy(place) = &arg.node {
+                                self.process_complix_func_ret(place.as_ref(), dest.as_ref());
                                 break;
                             }
                         }

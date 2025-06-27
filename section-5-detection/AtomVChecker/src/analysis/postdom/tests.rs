@@ -1,11 +1,9 @@
-use rustc_data_structures::fx::FxHashMap;
+use rustc_data_structures::{fx::FxHashMap, graph::depth_first_search};
 use std::cmp::max;
-use std::iter;
-use std::slice;
 
 use super::*;
 
-use rustc_data_structures::graph::{GraphPredecessors, GraphSuccessors, WithStartNode};
+use rustc_data_structures::graph::{Predecessors, StartNode, Successors};
 
 pub struct TestGraph {
     num_nodes: usize,
@@ -38,9 +36,12 @@ impl TestGraph {
 
 impl DirectedGraph for TestGraph {
     type Node = usize;
+    fn num_nodes(&self) -> usize {
+        self.num_nodes
+    }
 }
 
-impl WithStartNode for TestGraph {
+impl StartNode for TestGraph {
     fn start_node(&self) -> usize {
         self.start_node
     }
@@ -49,7 +50,7 @@ impl WithStartNode for TestGraph {
 impl WithEndNodes for TestGraph {
     fn end_nodes(&self) -> Vec<usize> {
         let mut result = vec![];
-        for node in self.depth_first_search(self.start_node()) {
+        for node in depth_first_search(self, self.start_node()) {
             if self.successors(node).count() == 0 {
                 result.push(node);
             }
@@ -59,32 +60,16 @@ impl WithEndNodes for TestGraph {
     }
 }
 
-impl WithNumNodes for TestGraph {
-    fn num_nodes(&self) -> usize {
-        self.num_nodes
-    }
-}
-
-impl WithPredecessors for TestGraph {
-    fn predecessors(&self, node: usize) -> <Self as GraphPredecessors<'_>>::Iter {
+impl Predecessors for TestGraph {
+    fn predecessors(&self, node: usize) -> impl Iterator<Item = Self::Node> {
         self.predecessors[&node].iter().cloned()
     }
 }
 
-impl WithSuccessors for TestGraph {
-    fn successors(&self, node: usize) -> <Self as GraphSuccessors<'_>>::Iter {
+impl Successors for TestGraph {
+    fn successors(&self, node: usize) -> impl Iterator<Item = Self::Node> {
         self.successors[&node].iter().cloned()
     }
-}
-
-impl<'graph> GraphPredecessors<'graph> for TestGraph {
-    type Item = usize;
-    type Iter = iter::Cloned<slice::Iter<'graph, usize>>;
-}
-
-impl<'graph> GraphSuccessors<'graph> for TestGraph {
-    type Item = usize;
-    type Iter = iter::Cloned<slice::Iter<'graph, usize>>;
 }
 
 #[test]

@@ -55,16 +55,10 @@ pub fn categorize(context: PlaceContext) -> Option<DefUse> {
         // and we only care about the result at suspension points. Borrows cannot
         // cross suspension points so this behavior is unproblematic.
         PlaceContext::MutatingUse(MutatingUseContext::Borrow) |
-        PlaceContext::NonMutatingUse(NonMutatingUseContext::SharedBorrow) |
-        PlaceContext::NonMutatingUse(NonMutatingUseContext::ShallowBorrow) |
-        PlaceContext::NonMutatingUse(NonMutatingUseContext::UniqueBorrow) |
-
-        PlaceContext::MutatingUse(MutatingUseContext::AddressOf) |
-        PlaceContext::NonMutatingUse(NonMutatingUseContext::AddressOf) |
-        PlaceContext::NonMutatingUse(NonMutatingUseContext::Inspect) |
-        PlaceContext::NonMutatingUse(NonMutatingUseContext::Copy) |
-        PlaceContext::NonMutatingUse(NonMutatingUseContext::Move) |
-        PlaceContext::NonUse(NonUseContext::AscribeUserTy) |
+        // FIXME: how to handle rest of variants
+        // https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/visit/enum.NonMutatingUseContext.html
+        PlaceContext::NonMutatingUse(_) |
+        PlaceContext::NonUse(NonUseContext::AscribeUserTy(_)) |
         PlaceContext::MutatingUse(MutatingUseContext::Retag) =>
             Some(DefUse::Use),
 
@@ -85,6 +79,7 @@ pub fn categorize(context: PlaceContext) -> Option<DefUse> {
         PlaceContext::MutatingUse(MutatingUseContext::Deinit | MutatingUseContext::SetDiscriminant) => {
             None
         }
+        _=>None
     }
 }
 

@@ -6,7 +6,7 @@ use std::collections::HashSet;
 
 use crate::analysis::postdom::{post_dominators, EndsControlFlowGraph};
 use rustc_data_structures::fx::FxHashSet;
-use rustc_index::vec::{Idx, IndexVec};
+use rustc_index::{Idx, IndexVec};
 
 #[derive(Clone, Debug)]
 pub struct ControlDeps<N: Idx> {
